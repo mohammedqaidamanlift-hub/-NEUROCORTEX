@@ -61,10 +61,33 @@ It combines symbolic reasoning with deep learning to continuously improve models
 
 ---
 
-## 🚀 التشغيل والتجربة
+## 🌍 Documentation
+- [English Version](#english-version)  
+- [النسخة العربية](#النسخة-العربية)
 
-### تشغيل مثال SRDF التجريبي
+---
 
-1. انتقل إلى مجلد الأمثلة:
+# English Version
+
+## 🚀 Quick Start
+
+### 1. Run on Google Colab
+You can directly try the **Toy Example** in Colab:
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammed-qaidalathwary/-NEUROCORTEX/blob/main/notebooks/srdf_toy_colab.ipynb)
+
+---
+
+### 2. Run Locally
+Clone the repository and run the toy example:
+
 ```bash
-cd examples/srdf_toy
+# Clone the repository
+git clone https://github.com/mohammed-qaidalathwary/-NEUROCORTEX.git
+cd -NEUROCORTEX/examples/srdf_toy
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the pipeline and save results
+python run.py > output.json
