@@ -33,23 +33,38 @@ To transition from static, human-dependent AI models to **"Evolutive AI"**—sys
 *   **Engineering**: Accelerated discovery of new materials and products through autonomous simulation and design.  
 *   **Industrial Automation**: Self-optimizing manufacturing processes and smart infrastructure without manual retuning.  
 
-## 🚀 Quick Start
+## 🤝 Contributing & Collaboration
 
-### Run on Google Colab
-You can directly try the **Toy Example** in Colab:
+We are actively seeking researchers, engineers, and visionaries to join this initiative. This is not just an incremental improvement; it's a foundational shift towards true AI autonomy.
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammed-qaidalathwary/-NEUROCORTEX/blob/main/notebooks/srdf_toy_colab.ipynb)
+- **Email:** Mohammedqaidalathwary@gmail.com  
+- **Author:** محمد قائد الاثوري  
 
-### Run Locally
-Clone the repository and run the toy example:
+## License
 
+This project and its whitepapers are licensed under the **Apache License 2.0** - see the [LICENSE](LICENSE) file for details.
+
+## 📚 Official Citation
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16945431.svg)](https://doi.org/10.5281/zenodo.16945431)  
+
+*The DOI resolves to the preprint and metadata on Zenodo, linked to this specific release (v1.0.0) of the repository.*
+
+---
+
+# 🧠 NEUROCORTEX: SRDF Framework
+
+**SRDF (Symbolic Relational Deep Framework)** is an experimental framework for **adaptive model refinement**.  
+It combines symbolic reasoning with deep learning to continuously improve models through a loop of:
+
+**Trawler → Generator → Arbiter → Model Update**
+
+---
+
+## 🚀 التشغيل والتجربة
+
+### تشغيل مثال SRDF التجريبي
+
+1. انتقل إلى مجلد الأمثلة:
 ```bash
-# Clone the repository
-git clone https://github.com/mohammed-qaidalathwary/-NEUROCORTEX.git
-cd -NEUROCORTEX/examples/srdf_toy
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the pipeline and save results
-python run.py
+cd examples/srdf_toy
