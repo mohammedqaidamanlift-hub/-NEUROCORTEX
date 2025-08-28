@@ -1,6 +1,6 @@
- # 🧠 NeuroCortex: The Self-Evolving AI Framework
+# 🧠 NeuroCortex: The Self-Evolving AI Framework
 
-![NeuroCortex Logo](https://raw.githubusercontent.com/mohammed-qaidalathwary/-NEUROCORTEX/main/assets/neurocortex_logo.png)
+![NeuroCortex Logo](https://raw.githubusercontent.com/mohammedqaidamanlift-hub/-NEUROCORTEX/main/assets/neurocortex_logo.png)
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16945431.svg)](https://doi.org/10.5281/zenodo.16945431)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -23,8 +23,8 @@ To transition from static, human-dependent AI models to **"Evolutive AI"**—sys
 
 ## 📄 Whitepapers
 
-- [English Whitepaper PDF](https://github.com/mohammed-qaidalathwary/-NEUROCORTEX/blob/main/Self_Evolving_AI_Whitepaper_EN_Final.pdf)  
-- [Arabic Whitepaper PDF](https://github.com/mohammed-qaidalathwary/-NEUROCORTEX/blob/main/%20Self_Evolving_AI_Whitepaper_AR_Final.pdf)  
+- [English Whitepaper PDF](https://github.com/mohammedqaidamanlift-hub/-NEUROCORTEX/blob/main/Self_Evolving_AI_Whitepaper_EN_Final.pdf)  
+- [Arabic Whitepaper PDF](https://github.com/mohammedqaidamanlift-hub/-NEUROCORTEX/blob/main/%20Self_Evolving_AI_Whitepaper_AR_Final.pdf)  
 
 ## 🔮 Applications
 
@@ -38,14 +38,14 @@ To transition from static, human-dependent AI models to **"Evolutive AI"**—sys
 ### Run on Google Colab
 You can directly try the **Toy Example** in Colab:
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammed-qaidalathwary/-NEUROCORTEX/blob/main/notebooks/srdf_toy_colab.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammedqaidamanlift-hub/-NEUROCORTEX/blob/main/notebooks/srdf_toy_colab.ipynb)
 
 ### Run Locally
 Clone the repository and run the toy example:
 
 ```bash
 # Clone the repository
-git clone https://github.com/mohammed-qaidalathwary/-NEUROCORTEX.git
+git clone https://github.com/mohammedqaidamanlift-hub/-NEUROCORTEX.git
 cd -NEUROCORTEX/examples/srdf_toy
 
 # Install dependencies
