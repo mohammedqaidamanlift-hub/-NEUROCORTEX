@@ -57,3 +57,33 @@ python run.py
 cd examples/srdf_toy_arabic
 pip install -r requirements.txt
 python run.py
+## 🧪 Requirements
+
+```txt
+# NeuroCortex SRDF - Core Dependencies
+numpy==1.21.0
+scipy==1.7.0
+scikit-learn==1.0.0
+imbalanced-learn==0.9.0
+pandas==1.3.0
+matplotlib==3.5.0
+seaborn==0.11.0
+tqdm==4.62.0
+joblib==1.1.0
+## 🤝 Contributing & Collaboration
+
+We are actively seeking researchers, engineers, and visionaries to join this initiative. This is not just an incremental improvement; it's a foundational shift towards true AI autonomy.
+
+- **Email:** mohammedqaidalathwary@gmail.com
+- **Author:** محمد قائد الاثوري
+
+## 📜 License
+
+This project and its whitepapers are licensed under the **Apache License 2.0** - see the [LICENSE](LICENSE) file for details.
+
+## 📚 Official Citation
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16945431.svg)](https://doi.org/10.5281/zenodo.16945431)  
+
+*The DOI resolves to the preprint and metadata on Zenodo, linked to this specific release (v1.0.0) of the repository.*
+## 📋 Project Structure
