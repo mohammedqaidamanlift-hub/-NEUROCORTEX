@@ -1,4 +1,4 @@
-{
+ {
   "neurocortex_srdf_experiment": {
     "version": "1.0.0",
     "experiment_date": "2024-01-15T12:00:00.000000",
@@ -47,6 +47,12 @@
       "memory_usage_mb": 256.8,
       "cpu_utilization_percent": 45.2,
       "success_status": "مكتمل"
+    },
+    
+    "repository_info": {
+      "github_url": "https://github.com/mohammedqaidamanlift-hub/NEUROCORTEX",
+      "contact_email": "mohammedqaidalathwary@gmail.com",
+      "author": "محمد قائد الاثوري"
     }
   }
-}
+ }
