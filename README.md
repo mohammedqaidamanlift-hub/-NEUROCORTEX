@@ -1,18 +1,12 @@
  # 🧠 NeuroCortex: The Self-Evolving AI Framework
 
-![NeuroCortex Logo](https://raw.githubusercontent.com/mohammedalathwary/NEUROCORTEX/main/assets/neurocortex_logo.png)
+![NeuroCortex Logo](https://raw.githubusercontent.com/mohammedqaidamanlift-hub/NEUROCORTEX/main/assets/neurocortex_logo.png)
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16945431.svg)](https://doi.org/10.5281/zenodo.16945431)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammedalathwary/NEUROCORTEX/blob/main/notebooks/srdf_toy_colab.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/notebooks/srdf_toy_colab.ipynb)
 
 A groundbreaking open-source framework for achieving autonomous self-evolution and self-management in artificial intelligence (AI). NeuroCortex moves beyond traditional AutoML by introducing the **Self-Reinforcing Development Framework (SRDF)**, enabling AI systems to re-engineer their own architecture and learning processes without human intervention.
-
-## 🌍 Quick Navigation
-[![English Version](https://img.shields.io/badge/📖-English%20Documentation-blue)](#english-version)
-[![Arabic Version](https://img.shields.io/badge/📖-النسخة%20العربية-green)](#arabic-version)
-[![English Example](https://img.shields.io/badge/🧪-English%20Example-orange)](#english-example)
-[![Arabic Example](https://img.shields.io/badge/🧪-مثال%20عربي-purple)](#arabic-example)
 
 ## 🧠 The SRDF Architecture
 
@@ -30,8 +24,8 @@ To transition from static, human-dependent AI models to **"Evolutive AI"**—sys
 
 ## 📄 Whitepapers
 
-- [English Whitepaper PDF](https://github.com/mohammedalathwary/NEUROCORTEX/blob/main/Self_Evolving_AI_Whitepaper_EN_Final.pdf)  
-- [Arabic Whitepaper PDF](https://github.com/mohammedalathwary/NEUROCORTEX/blob/main/%20Self_Evolving_AI_Whitepaper_AR_Final.pdf)  
+- [English Whitepaper PDF](https://github.com/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/Self_Evolving_AI_Whitepaper_EN_Final.pdf)  
+- [Arabic Whitepaper PDF](https://github.com/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/%20Self_Evolving_AI_Whitepaper_AR_Final.pdf)  
 
 ## 🔮 Applications
 
@@ -43,15 +37,15 @@ To transition from static, human-dependent AI models to **"Evolutive AI"**—sys
 ## 🧪 Examples
 
 ### English Example
-[![Open English Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammedalathwary/NEUROCORTEX/blob/main/notebooks/srdf_toy_colab.ipynb)
+[![Open English Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/notebooks/srdf_toy_colab.ipynb)
 
 ### Arabic Example (مثال عربي)
-[![Open Arabic Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammedalathwary/NEUROCORTEX/blob/main/notebooks/srdf_toy_arabic.ipynb)
+[![Open Arabic Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/notebooks/srdf_toy_arabic.ipynb)
 
 ### Run Locally
 ```bash
 # Clone the repository
-git clone https://github.com/mohammedalathwary/NEUROCORTEX.git
+git clone https://github.com/mohammedqaidamanlift-hub/NEUROCORTEX.git
 cd NEUROCORTEX
 
 # English example
