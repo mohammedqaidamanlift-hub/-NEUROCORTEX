@@ -1,4 +1,4 @@
-# 🧠 NeuroCortex: The Self-Evolving AI Framework
+ # 🧠 NeuroCortex: The Self-Evolving AI Framework
 
 ![NeuroCortex Logo](https://raw.githubusercontent.com/mohammedalathwary/NEUROCORTEX/main/assets/neurocortex_logo.png)
 
@@ -11,7 +11,8 @@ A groundbreaking open-source framework for achieving autonomous self-evolution a
 ## 🌍 Quick Navigation
 [![English Version](https://img.shields.io/badge/📖-English%20Documentation-blue)](#english-version)
 [![Arabic Version](https://img.shields.io/badge/📖-النسخة%20العربية-green)](#arabic-version)
-[![Toy Example](https://img.shields.io/badge/🧪-Toy%20Example-orange)](#-toy-example)
+[![English Example](https://img.shields.io/badge/🧪-English%20Example-orange)](#english-example)
+[![Arabic Example](https://img.shields.io/badge/🧪-مثال%20عربي-purple)](#arabic-example)
 
 ## 🧠 The SRDF Architecture
 
@@ -39,19 +40,26 @@ To transition from static, human-dependent AI models to **"Evolutive AI"**—sys
 *   **Engineering**: Accelerated discovery of new materials and products through autonomous simulation and design.  
 *   **Industrial Automation**: Self-optimizing manufacturing processes and smart infrastructure without manual retuning.  
 
-## 🧪 Toy Example
+## 🧪 Examples
 
-### Run on Google Colab
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammedalathwary/NEUROCORTEX/blob/main/notebooks/srdf_toy_colab.ipynb)
+### English Example
+[![Open English Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammedalathwary/NEUROCORTEX/blob/main/notebooks/srdf_toy_colab.ipynb)
+
+### Arabic Example (مثال عربي)
+[![Open Arabic Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammedalathwary/NEUROCORTEX/blob/main/notebooks/srdf_toy_arabic.ipynb)
 
 ### Run Locally
 ```bash
 # Clone the repository
 git clone https://github.com/mohammedalathwary/NEUROCORTEX.git
-cd NEUROCORTEX/examples/srdf_toy
+cd NEUROCORTEX
 
-# Install dependencies
+# English example
+cd examples/srdf_toy_english
 pip install -r requirements.txt
+python run.py
 
-# Run the pipeline
+# Arabic example
+cd examples/srdf_toy_arabic
+pip install -r requirements.txt
 python run.py
