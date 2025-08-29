@@ -47,6 +47,12 @@
       "memory_usage_mb": 256.8,
       "cpu_utilization_percent": 45.2,
       "success_status": "COMPLETED"
+    },
+    
+    "repository_info": {
+      "github_url": "https://github.com/mohammedqaidamanlift-hub/NEUROCORTEX",
+      "contact_email": "mohammedqaidalathwary@gmail.com",
+      "author": "محمد قائد الاثوري"
     }
   }
 }
