@@ -1,6 +1,6 @@
- # 🧠 NeuroCortex: The Self-Evolving AI Framework
+# 🧠 NeuroCortex: The Self-Evolving AI Framework
 
-![NeuroCortex Logo](![NeuroCortex Logo](assets/neurocortex_logo.png))
+![NeuroCortex Logo](assets/neurocortex_logo.png)
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16945431.svg)](https://doi.org/10.5281/zenodo.16945431)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -59,8 +59,8 @@ For inquiries, collaborations, or research partnerships, you can reach out via:
 - **Email:** [mohammedqaidalathwary@gmail.com](mailto:mohammedqaidalathwary@gmail.com)  
 - **LinkedIn:** [Mohammed Qaid Al-Athwary](https://www.linkedin.com/in/Mohammed-Qaid-Alathwary)
 
-  ---
-  
+---
+
 ## 🚀 Vision
 
 To transition from static, human-dependent AI models to **"Evolutive AI"**—systems capable of managing their own lifecycle, adapting in real-time to novel data, and driving sustainable innovation autonomously.
