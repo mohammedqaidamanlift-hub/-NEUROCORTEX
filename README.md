@@ -1,6 +1,6 @@
  # 🧠 NeuroCortex: The Self-Evolving AI Framework
 
-![NeuroCortex Logo](https://raw.githubusercontent.com/mohammedqaidamanlift-hub/NEUROCORTEX/main/assets/neurocortex_logo.png)
+![NeuroCortex Logo](![NeuroCortex Logo](assets/neurocortex_logo.png))
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16945431.svg)](https://doi.org/10.5281/zenodo.16945431)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
