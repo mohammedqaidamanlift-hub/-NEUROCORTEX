@@ -2,6 +2,9 @@
 
 ![NeuroCortex Logo](assets/neurocortex_logo.png)
 
+
+**Author's ORCID iD:** [0009-0006-9075-072X](https://orcid.org/0009-0006-9075-072X)
+
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16945431.svg)](https://doi.org/10.5281/zenodo.16945431)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/notebooks/srdf_toy_colab.ipynb)
