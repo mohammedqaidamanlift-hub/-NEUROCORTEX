@@ -95,11 +95,11 @@ To transition from static, human-dependent AI models to **"Evolutive AI"**—sys
 
 ## 🧪 Examples
 
-### English Example
-[![Open English Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/notebooks/srdf_toy_colab.ipynb)
+ ### English Example
+[![Open English Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammed-qaidalathwary/-NEUROCORTEX-1/blob/main/notebooks/srdf_toy_colab.ipynb)
 
 ### Arabic Example (مثال عربي)
-[![Open Arabic Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/notebooks/srdf_toy_arabic.ipynb)
+[![Open Arabic Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammedqaidamanlift-hub/NEUROCORTEX-1/blob/main/notebooks/srdf_toy_arabic.ipynb)
 
 ### Run Locally
 ```bash
