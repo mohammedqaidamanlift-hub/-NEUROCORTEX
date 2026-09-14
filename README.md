@@ -265,15 +265,13 @@ These are potential research directions rather than claims that the current prot
 
 ---
 
- ## 🧪 Examples
+🧪 Examples
 
-### NeuroCortex SRDF Toy Prototype v2.0
+NeuroCortex SRDF Toy Prototype v2.0
 
-[Open in Google Colab](https://colab.research.google.com/github/mohammedqaidamanlift-hub/-NEUROCORTEX/blob/main/notebooks/NeuroCortex_SRDF_Toy_Prototype_v2.0.ipynb)
+"Open in Google Colab" (https://colab.research.google.com/github/mohammedqaidamanlift-hub/-NEUROCORTEX/blob/main/notebooks/NeuroCortex_SRDF_Toy_Prototype_v2.0.ipynb)
 
 This notebook demonstrates the complete controlled adaptation workflow, including candidate generation, evaluation, invariant checking, Arbiter authorization, state transition, result serialization, and automated auditing.
-
-«Older notebooks may remain in the repository for historical or development purposes. They are not presented as official examples and are not referenced by the main README.»
 
 ---
 
