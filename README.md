@@ -1,121 +1,394 @@
-# 🧠 NeuroCortex: The Self-Evolving AI Framework
+🧠 NeuroCortex: The Self-Evolving AI Framework
 
-![NeuroCortex Logo](assets/neurocortex_logo.png)
+"NeuroCortex Logo" (assets/neurocortex_logo.png)
 
+Author: Mohammed Qaid Al-Athwary
+ORCID iD: "0009-0006-9075-072X" (https://orcid.org/0009-0006-9075-072X)
 
-**Author's ORCID iD:** [0009-0006-9075-072X](https://orcid.org/0009-0006-9075-072X)
-
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16945431.svg)](https://doi.org/10.5281/zenodo.16945431)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/notebooks/srdf_toy_colab.ipynb)
-![GitHub Repo stars](https://img.shields.io/github/stars/mohammedqaidamanlift-hub/NEUROCORTEX?style=social)
-![GitHub forks](https://img.shields.io/github/forks/mohammedqaidamanlift-hub/NEUROCORTEX?style=social)
-![GitHub issues](https://img.shields.io/github/issues/mohammedqaidamanlift-hub/NEUROCORTEX)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/mohammedqaidamanlift-hub/NEUROCORTEX)
-![GitHub last commit](https://img.shields.io/github/last-commit/mohammedqaidamanlift-hub/NEUROCORTEX)
-![Python Version](https://img.shields.io/badge/python-3.9%2B-blue)
-![Build Passing](https://img.shields.io/badge/build-passing-brightgreen)
-![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)
+""DOI" (https://zenodo.org/badge/DOI/10.5281/zenodo.16945431.svg)" (https://doi.org/10.5281/zenodo.16945431)
+""License: Apache 2.0" (https://img.shields.io/badge/License-Apache_2.0-blue.svg)" (https://opensource.org/licenses/Apache-2.0)
+""Open In Colab" (https://colab.research.google.com/assets/colab-badge.svg)" (https://colab.research.google.com/github/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/notebooks/NeuroCortex_SRDF_Toy_Prototype_v2.0.ipynb)
+"GitHub Repo stars" (https://img.shields.io/github/stars/mohammedqaidamanlift-hub/NEUROCORTEX?style=social)
+"GitHub forks" (https://img.shields.io/github/forks/mohammedqaidamanlift-hub/NEUROCORTEX)
+"GitHub issues" (https://img.shields.io/github/issues/mohammedqaidamanlift-hub/NEUROCORTEX)
+"GitHub pull requests" (https://img.shields.io/github/issues-pr/mohammedqaidamanlift-hub/NEUROCORTEX)
+"GitHub last commit" (https://img.shields.io/github/last-commit/mohammedqaidamanlift-hub/NEUROCORTEX)
+"Python Version" (https://img.shields.io/badge/python-3.9%2B-blue)
 
 ---
 
-A groundbreaking open-source framework for achieving autonomous self-evolution and self-management in artificial intelligence (AI).  
-NeuroCortex moves beyond traditional AutoML by introducing the **Self-Reinforcing Development Framework (SRDF)**, enabling AI systems to re-engineer their own architecture and learning processes without human intervention.
+📑 Table of Contents
+
+- "Overview" (#-overview)
+- "The SRDF Architecture" (#-the-srdf-architecture)
+- "Vision" (#-vision)
+- "Whitepapers" (#-whitepapers)
+- "Applications" (#-applications)
+- "Examples" (#-examples)
+- "Installation" (#-installation)
+- "Usage" (#-usage)
+- "Contributing" (#-contributing)
+- "License" (#-license)
+- "Citing NeuroCortex" (#-citing-neurocortex)
+- "Contact" (#-contact)
+- "Acknowledgements" (#-acknowledgements)
 
 ---
 
-## 📑 Table of Contents
-- [Overview](#-neurocortex-the-self-evolving-ai-framework)
-- [Architecture](#-the-srdf-architecture)
-- [Vision](#-vision)
-- [Whitepapers](#-whitepapers)
-- [Applications](#-applications)
-- [Examples](#-examples)
-- [Installation](#-installation)
-- [Usage](#-usage)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Citing NeuroCortex](#-citing-neurocortex)
-- [Contact](#-contact)
-- [Acknowledgements](#-acknowledgements)
+🧠 Overview
+
+NeuroCortex is a research framework centered on the Self-Reinforcing Development Framework (SRDF).
+
+SRDF describes a controlled closed-loop approach for runtime structural adaptation in AI systems. Instead of allowing unrestricted self-modification, the framework separates the adaptation process into explicit stages for observation, candidate generation, evaluation, authorization, and controlled state transition.
+
+The framework is organized around three principal components:
+
+- Trawler — analyzes the current context and identifies conditions that may justify adaptation.
+- Generator — produces candidate structural or learning modifications.
+- Arbiter — evaluates candidates against predefined constraints and authorizes only candidates that satisfy the required conditions.
+
+The repository includes an executable toy prototype demonstrating this workflow in a controlled synthetic environment.
+
+«Important: The included prototype is a feasibility demonstration of the SRDF workflow. Its single-run results do not establish general performance superiority, statistical significance, general AI safety, or generalization beyond the experimental setting.»
 
 ---
 
-## 🧠 The SRDF Architecture
+🧩 The SRDF Architecture
 
-The core of NeuroCortex is a closed-loop system composed of three integrated units:
+The SRDF workflow can be represented as:
 
-1. **The Trawler**: Continuously analyzes data and performance to identify improvement areas and anomalies.  
-2. **The Generator**: Proposes novel architectural modifications, training strategies, or entirely new sub-models.  
-3. **The Arbiter**: Validates and integrates only the most effective innovations against rigorous performance benchmarks.  
+Current State
+      │
+      ▼
+  ┌─────────┐
+  │ Trawler │
+  └────┬────┘
+       │
+       ▼
+  ┌───────────┐
+  │ Generator │
+  └─────┬─────┘
+        │
+        ▼
+ ┌────────────────┐
+ │ Candidate      │
+ │ Evaluation     │
+ └───────┬────────┘
+         │
+         ▼
+ ┌────────────────┐
+ │ Hybrid Arbiter │
+ └───────┬────────┘
+         │
+     ┌───┴───┐
+     │       │
+   Reject   Accept
+     │       │
+     │       ▼
+     │   Commit
+     │       │
+     └───────┴──────► Updated State
 
-Together, these units form a self-reinforcing cycle of continuous improvement, aiming to achieve **Evolutive AI**.
+1. Trawler
+
+The Trawler observes the current execution context and searches for conditions that may trigger adaptation.
+
+In the toy prototype, the demonstrated trigger is class imbalance in the training data.
+
+2. Generator
+
+The Generator produces a bounded set of candidate modifications.
+
+The prototype demonstrates candidate generation using alternative model structures, including:
+
+- Gradient Boosting
+- SMOTE + Random Forest
+
+3. Candidate Evaluation
+
+Each candidate is evaluated using predefined performance, safety, and resource criteria.
+
+The prototype records:
+
+- Accuracy
+- Precision
+- Recall
+- F1 score
+- Safety checks
+- Resource cost
+- Utility score
+
+4. Hybrid Arbiter
+
+The Arbiter acts as the authorization layer.
+
+A candidate must satisfy the required conditions, including:
+
+- Structural invariants
+- Resource constraints
+- Safety checks
+- Utility threshold
+
+Only an authorized candidate can be committed to the runtime state.
+
+5. Controlled State Transition
+
+If a candidate passes authorization, the execution graph is updated and the runtime state version is incremented.
+
+If candidates are rejected, the existing state is preserved.
 
 ---
 
-## 📞 Contact
+🔬 Prototype
 
-For inquiries, collaborations, or research partnerships, you can reach out via:
+The repository contains an executable toy implementation of the SRDF workflow:
 
-- **Full Name:** Mohammed Qaid Al-Athwary  
-- **Phone:** +967775990030  
-- **Email:** [mohammedqaidalathwary@gmail.com](mailto:mohammedqaidalathwary@gmail.com)  
-- **LinkedIn:** [Mohammed Qaid Al-Athwary](https://www.linkedin.com/in/Mohammed-Qaid-Alathwary)
+"notebooks/NeuroCortex_SRDF_Toy_Prototype_v2.0.ipynb"
+
+The prototype demonstrates:
+
+1. Synthetic environment creation
+2. Explicit runtime state
+3. Context acquisition
+4. Trawler analysis
+5. Baseline model evaluation
+6. Structural candidate generation
+7. Candidate evaluation
+8. Structural invariant checking
+9. Hybrid Arbiter authorization
+10. Authorized candidate selection
+11. Commit or rejection
+12. Observed outcome
+13. Comparison of candidate configurations
+14. Visualization
+15. Execution graph transition
+16. JSON experiment record
+17. Automated prototype audit
+18. Scientific interpretation
+
+▶️ Run the Prototype in Google Colab
+
+""Open In Colab" (https://colab.research.google.com/assets/colab-badge.svg)" (https://colab.research.google.com/github/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/notebooks/NeuroCortex_SRDF_Toy_Prototype_v2.0.ipynb)
+
+The prototype is intentionally presented as a toy feasibility demonstration, not as a comprehensive benchmark of self-evolving AI.
+
+Prototype Interpretation
+
+The experiment demonstrates a bounded:
+
+Observe
+   ↓
+Analyze
+   ↓
+Generate
+   ↓
+Evaluate
+   ↓
+Authorize
+   ↓
+Commit / Reject
+   ↓
+Updated State
+
+workflow.
+
+The numerical results generated by the notebook belong to the specific execution of that experiment and should not be interpreted as evidence of general superiority or universal applicability.
 
 ---
 
-## 🚀 Vision
+🚀 Vision
 
-To transition from static, human-dependent AI models to **"Evolutive AI"**—systems capable of managing their own lifecycle, adapting in real-time to novel data, and driving sustainable innovation autonomously.
+The long-term research direction of NeuroCortex is to investigate AI systems capable of managing controlled aspects of their own development lifecycle.
 
----
+The intended direction includes:
 
-### 🌍 Arabic Version النسخة العربية
+- Runtime adaptation
+- Structural modification
+- Explicit evaluation before modification
+- Constraint-based authorization
+- State preservation after rejected modifications
+- Resource-aware adaptation
+- Auditable decision records
 
-**إطار SRDF (الإطار المعزز ذاتيًا)** هو نهج ثوري في الذكاء الاصطناعي يمكن الأنظمة من التطور الذاتي والإدارة الذاتية.
-
-## 🌟 الرؤية الأساسية
-
-الانتقال من نماذج الذكاء الاصطناعي الثابتة إلى **"الذكاء الاصطناعي التطوري"** - أنظمة قادرة على إدارة دورة حياتها الخاصة، والتكيف في الوقت الفعلي مع البيانات الجديدة، ودفع الابتكار المستمر بشكل مستقل.
-
----
-
-## 📄 Whitepapers
-
-- [English Whitepaper PDF](https://github.com/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/Self_Evolving_AI_Whitepaper_EN_Final.pdf)  
-- [Arabic Whitepaper PDF](https://github.com/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/%20Self_Evolving_AI_Whitepaper_AR_Final.pdf)  
+The framework does not assume unrestricted self-modification. Instead, it investigates whether self-directed adaptation can be organized as a controlled and auditable process.
 
 ---
 
-## 🔮 Applications
+📄 Whitepapers
 
-* **Healthcare**: AI that redesigns itself to detect novel viruses within hours, not weeks.  
-* **Cybersecurity**: Autonomous systems that anticipate and counter emerging threats in real-time.  
-* **Engineering**: Accelerated discovery of new materials and products through autonomous simulation and design.  
-* **Industrial Automation**: Self-optimizing manufacturing processes and smart infrastructure without manual retuning.  
+English
+
+"English Whitepaper PDF" (https://github.com/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/Self_Evolving_AI_Whitepaper_EN_Final.pdf)
+
+Arabic
+
+"Arabic Whitepaper PDF" (https://github.com/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/%20Self_Evolving_AI_Whitepaper_AR_Final.pdf)
+
+The repository and associated research materials provide the conceptual and technical background for the SRDF framework.
 
 ---
 
-## 🧪 Examples
+🔮 Applications
 
-### English Example
-[![Open English Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/notebooks/srdf_toy_colab.ipynb)
+The SRDF concept is intended as a general research framework that may be investigated in areas such as:
 
-### Arabic Example (مثال عربي)
-[![Open Arabic Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/notebooks/srdf_toy_arabic.ipynb)
+- Adaptive Machine Learning — controlled adaptation of model structures and learning strategies.
+- AI Systems — runtime management of evolving computational components.
+- Engineering — adaptive optimization and configuration of computational systems.
+- Industrial Automation — controlled adaptation of system configurations.
+- Cybersecurity — investigation of adaptive defensive architectures.
+- Scientific Computing — automated selection and modification of computational strategies.
 
-### Run Locally
-```bash
-# Clone the repository
+These are potential research directions rather than claims that the current prototype has been validated for production use in these domains.
+
+---
+
+🧪 Examples
+
+The repository currently provides one official executable SRDF example:
+
+NeuroCortex SRDF Toy Prototype v2.0
+
+Notebook:
+
+"notebooks/NeuroCortex_SRDF_Toy_Prototype_v2.0.ipynb"
+
+""Open In Colab" (https://colab.research.google.com/assets/colab-badge.svg)" (https://colab.research.google.com/github/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/notebooks/NeuroCortex_SRDF_Toy_Prototype_v2.0.ipynb)
+
+This notebook demonstrates the complete controlled adaptation workflow, including candidate generation, evaluation, invariant checking, Arbiter authorization, state transition, result serialization, and automated auditing.
+
+Archived / Legacy Notebook
+
+The repository may retain older notebooks for historical or development purposes.
+
+These files are not presented as the official example and are not referenced by the main README.
+
+---
+
+💻 Installation
+
+Clone the repository:
+
 git clone https://github.com/mohammedqaidamanlift-hub/NEUROCORTEX.git
 cd NEUROCORTEX
 
-# English example
-cd examples/srdf_toy_english
-pip install -r requirements.txt
-python run.py
+For the notebook prototype, install the required Python packages:
 
-# Arabic example
-cd examples/srdf_toy_arabic
-pip install -r requirements.txt
-python run.py
+pip install scikit-learn imbalanced-learn numpy pandas matplotlib seaborn
+
+The prototype can then be opened with Jupyter Notebook or Google Colab.
+
+---
+
+▶️ Usage
+
+Google Colab
+
+Open the official prototype directly:
+
+""Open In Colab" (https://colab.research.google.com/assets/colab-badge.svg)" (https://colab.research.google.com/github/mohammedqaidamanlift-hub/NEUROCORTEX/blob/main/notebooks/NeuroCortex_SRDF_Toy_Prototype_v2.0.ipynb)
+
+Run the notebook cells sequentially.
+
+Local Jupyter Environment
+
+From the repository root:
+
+jupyter notebook notebooks/NeuroCortex_SRDF_Toy_Prototype_v2.0.ipynb
+
+The prototype generates an experiment record named:
+
+srdf_v2_results.json
+
+The JSON record contains the configuration, dataset information, baseline metrics, candidate evaluations, authorization decisions, state transition, and observed outcome.
+
+---
+
+📊 Reproducibility
+
+The prototype uses a fixed random seed:
+
+SEED = 42
+
+The experiment is therefore designed to provide a reproducible single-run demonstration under the same software environment and configuration.
+
+The experiment should nevertheless be interpreted as a toy prototype execution, not as a statistically powered benchmark.
+
+---
+
+🤝 Contributing
+
+Contributions, technical discussions, and research-oriented feedback are welcome.
+
+Before proposing major changes, please consider whether the change:
+
+- Preserves the conceptual SRDF workflow.
+- Maintains explicit authorization before state modification.
+- Preserves structural and safety constraints.
+- Improves reproducibility or auditability.
+- Is supported by appropriate experimental evidence.
+
+For substantial architectural changes, please open an issue to discuss the proposed direction before submitting a pull request.
+
+---
+
+📜 License
+
+This project is released under the Apache License 2.0.
+
+See the ""LICENSE"" (LICENSE) file for the complete license text.
+
+---
+
+📚 Citing NeuroCortex
+
+If you use NeuroCortex or the SRDF framework in academic or technical work, please cite the associated research record:
+
+Mohammed Qaid Al-Athwary. NeuroCortex / Self-Reinforcing Development Framework.
+
+DOI:
+
+https://doi.org/10.5281/zenodo.16945431
+
+ORCID:
+
+https://orcid.org/0009-0006-9075-072X
+
+---
+
+📞 Contact
+
+For research-related inquiries, technical discussions, or collaboration:
+
+Mohammed Qaid Al-Athwary
+
+Email: mohammedqaidalathwary@gmail.com
+
+LinkedIn: "Mohammed Qaid Al-Athwary" (https://www.linkedin.com/in/Mohammed-Qaid-Alathwary)
+
+---
+
+🙏 Acknowledgements
+
+The NeuroCortex project is developed as an independent research effort exploring controlled self-adaptation and self-management mechanisms for AI systems.
+
+Feedback, technical discussion, and reproducible experimentation are welcomed.
+
+---
+
+⚠️ Research Scope
+
+NeuroCortex is an ongoing research project.
+
+The current repository prototype should not be interpreted as demonstrating:
+
+- General self-evolving artificial intelligence
+- Unrestricted program synthesis
+- Universal AI safety
+- Statistical significance
+- General performance superiority
+- Superiority over existing adaptive-agent architectures
+- Production readiness
+- Generalization beyond the demonstrated experimental setting
+
+The purpose of the prototype is to provide an executable and auditable demonstration of the proposed SRDF control workflow.
