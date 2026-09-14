@@ -273,7 +273,7 @@ NeuroCortex SRDF Toy Prototype v2.0
 
 Notebook:
 
- ""Open In Colab" (https://colab.research.google.com/assets/colab-badge.svg)" (https://colab.research.google.com/github/mohammedqaidamanlift-hub/-NEUROCORTEX/blob/main/notebooks/NeuroCortex_SRDF_Toy_Prototype_v2.0.ipynb)
+ [Open in Google Colab](https://colab.research.google.com/github/mohammedqaidamanlift-hub/-NEUROCORTEX/blob/main/notebooks/NeuroCortex_SRDF_Toy_Prototype_v2.0.ipynb)
 
 ""Open In Colab" (https://colab.research.google.com/assets/colab-badge.svg)" (https://colab.research.google.com/github/mohammedqaidamanlift-hub/-NEUROCORTEX/blob/main/notebooks/NeuroCortex_SRDF_Toy_Prototype_v2.0.ipynb)
 
