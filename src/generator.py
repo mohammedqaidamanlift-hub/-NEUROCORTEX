@@ -1,88 +1,75 @@
 # src/generator.py
 """
-Generator module for proposing novel architectural modifications and solutions.
+Generator module for structural candidate generation.
+
+The implementation follows the NeuroCortex SRDF Toy Prototype v2.0
+reference implementation.
 """
 
-import random
-from typing import List, Dict
+from typing import Dict, List
+
 
 class Generator:
-    """Solution proposal unit for generating innovative improvements."""
-    
+    """Structural candidate generator."""
+
     def __init__(self):
-        self.solution_templates = self._initialize_templates()
         self.generated_solutions = []
-    
+
     def propose_solutions(self, analysis_results: Dict) -> List[Dict]:
         """
-        Generate proposed solutions based on analysis results.
-        
+        Generate structural candidates from Trawler findings.
+
+        Candidate generation follows the reference implementation:
+        candidates are deterministic and are generated only when
+        class imbalance is detected.
+
         Args:
-            analysis_results: Output from Trawler analysis
-            
+            analysis_results: Trawler findings.
+
         Returns:
-            List of proposed solutions with metadata
+            List of structural candidate dictionaries.
         """
-        issues = analysis_results.get("identified_issues", [])
-        recommendations = analysis_results.get("recommendations", [])
-        
-        solutions = []
-        
-        for issue, recommendation in zip(issues, recommendations):
-            solution = self._generate_solution(issue, recommendation)
-            solutions.append(solution)
-            self.generated_solutions.append(solution)
-        
-        return solutions
-    
-    def _initialize_templates(self):
-        """Initialize solution templates for different problem types."""
-        return {
-            "accuracy": [
-                "GradientBoosting with hyperparameter optimization",
-                "Neural Architecture Search for optimal structure",
-                "Ensemble of diverse model types"
-            ],
-            "recall": [
-                "SMOTE for class balancing",
-                "Focal loss for imbalanced data",
-                "Cost-sensitive learning approach"
-            ],
-            "speed": [
-                "Model quantization for faster inference",
-                "Architecture pruning for efficiency",
-                "Knowledge distillation to smaller model"
-            ]
-        }
-    
-    def _generate_solution(self, issue: str, recommendation: str) -> Dict:
-        """Generate a specific solution based on issue type."""
-        solution_type = self._identify_solution_type(issue)
-        
-        template = random.choice(self.solution_templates.get(solution_type, ["Default optimization"]))
-        
-        return {
-            "issue": issue,
-            "recommendation": recommendation,
-            "proposed_solution": template,
-            "confidence_score": random.uniform(0.7, 0.95),
-            "estimated_improvement": f"{random.randint(5, 20)}%",
-            "complexity": random.choice(["low", "medium", "high"])
-        }
-    
-    def _identify_solution_type(self, issue: str) -> str:
-        """Identify the type of solution needed based on issue."""
-        issue_lower = issue.lower()
-        
-        if any(word in issue_lower for word in ["accuracy", "precision", "f1"]):
-            return "accuracy"
-        elif any(word in issue_lower for word in ["recall", "minority", "class"]):
-            return "recall"
-        elif any(word in issue_lower for word in ["speed", "time", "slow"]):
-            return "speed"
-        else:
-            return "general"
-    
+        candidates = self.generate_candidates(analysis_results)
+
+        self.generated_solutions.extend(candidates)
+
+        return candidates
+
+    def generate_candidates(self, findings: Dict) -> List[Dict]:
+        """
+        Generate the structural candidates defined by the reference
+        NeuroCortex SRDF Toy Prototype v2.0 implementation.
+        """
+
+        if not findings["class_imbalance"]:
+            return []
+
+        candidates = [
+            {
+                "name": "GradientBoosting",
+                "graph": [
+                    "Input",
+                    "GradientBoosting",
+                    "Output",
+                ],
+                "resource_cost": 1.5,
+                "description": "Replace the baseline classifier.",
+            },
+            {
+                "name": "SMOTE_RandomForest",
+                "graph": [
+                    "Input",
+                    "SMOTE",
+                    "RandomForest",
+                    "Output",
+                ],
+                "resource_cost": 2.0,
+                "description": "Insert SMOTE before RandomForest.",
+            },
+        ]
+
+        return candidates
+
     def get_solution_history(self):
-        """Return history of all generated solutions."""
+        """Return history of all generated structural candidates."""
         return self.generated_solutions
