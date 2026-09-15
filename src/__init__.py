@@ -1,4 +1,3 @@
-```python
 # src/__init__.py
 """
 NeuroCortex - Self-Evolving AI Framework
@@ -16,6 +15,6 @@ __email__ = "mohammedqaidalathwary@gmail.com"
 __all__ = [
     "SRDFFramework",
     "Trawler",
-    "Generator", 
-    "Arbiter"
+    "Generator",
+    "Arbiter",
 ]
