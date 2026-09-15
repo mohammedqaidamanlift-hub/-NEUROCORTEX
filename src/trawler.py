@@ -1,94 +1,92 @@
 # src/trawler.py
 """
-Trawler module for continuous performance analysis and anomaly detection.
+Trawler module for runtime context analysis and class-imbalance detection.
+
+The implementation follows the NeuroCortex SRDF Toy Prototype v2.0
+reference implementation.
 """
 
-import numpy as np
-from datetime import datetime
 import json
+from datetime import datetime, timezone
+
+import numpy as np
+
 
 class Trawler:
-    """Continuous analysis unit for identifying improvement areas."""
-    
-    def __init__(self):
+    """Runtime analysis unit for detecting adaptation-triggering conditions."""
+
+    def __init__(self, imbalance_threshold=3.0):
+        self.imbalance_threshold = float(imbalance_threshold)
         self.analysis_history = []
         self.last_analysis_time = None
-    
-    def analyze_performance(self, model, data, labels):
+
+    def analyze(self, y_train, current_state):
         """
-        Analyze model performance and identify improvement areas.
-        
+        Analyze the current runtime context.
+
+        The analysis follows the reference prototype:
+        class imbalance is detected from the training-label distribution.
+
         Args:
-            model: The machine learning model to analyze
-            data: Input data for analysis
-            labels: Target labels
-            
+            y_train: Training target labels.
+            current_state: Current NeuroCortex runtime state.
+
         Returns:
-            dict: Analysis results with recommendations
+            dict: Trawler findings.
         """
-        analysis_time = datetime.now()
-        
-        # Simulate performance analysis
-        performance_metrics = self._calculate_metrics(model, data, labels)
-        issues = self._identify_issues(performance_metrics)
-        recommendations = self._generate_recommendations(issues)
-        
-        analysis_result = {
+        counts = np.bincount(np.asarray(y_train, dtype=int))
+
+        if len(counts) < 2:
+            imbalance_ratio = float("inf")
+        elif counts.min() == 0:
+            imbalance_ratio = float("inf")
+        else:
+            imbalance_ratio = float(
+                counts.max() / counts.min()
+            )
+
+        findings = {
+            "class_imbalance": bool(
+                np.isfinite(imbalance_ratio)
+                and imbalance_ratio >= self.imbalance_threshold
+            ),
+            "imbalance_ratio": float(imbalance_ratio),
+            "threshold": self.imbalance_threshold,
+            "trigger": (
+                "class_imbalance"
+                if (
+                    np.isfinite(imbalance_ratio)
+                    and imbalance_ratio >= self.imbalance_threshold
+                )
+                else "no_trigger"
+            ),
+        }
+
+        analysis_time = datetime.now(timezone.utc)
+
+        analysis_record = {
             "timestamp": analysis_time.isoformat(),
-            "performance_metrics": performance_metrics,
-            "identified_issues": issues,
-            "recommendations": recommendations,
-            "model_type": type(model).__name__
+            "findings": findings,
+            "class_counts": counts.tolist(),
+            "graph": list(current_state.get("graph", [])),
+            "state_version": int(current_state.get("version", 0)),
         }
-        
-        self.analysis_history.append(analysis_result)
+
+        self.analysis_history.append(analysis_record)
         self.last_analysis_time = analysis_time
-        
-        return analysis_result
-    
-    def _calculate_metrics(self, model, data, labels):
-        """Calculate various performance metrics."""
-        # Placeholder for actual metric calculation
-        return {
-            "accuracy": 0.85,
-            "precision": 0.82,
-            "recall": 0.78,
-            "f1_score": 0.80,
-            "inference_time": 0.15
-        }
-    
-    def _identify_issues(self, metrics):
-        """Identify performance issues based on metrics."""
-        issues = []
-        
-        if metrics["accuracy"] < 0.9:
-            issues.append("Low accuracy - needs improvement")
-        if metrics["recall"] < 0.8:
-            issues.append("Poor recall on minority classes")
-        if metrics["inference_time"] > 0.1:
-            issues.append("Slow inference speed")
-            
-        return issues
-    
-    def _generate_recommendations(self, issues):
-        """Generate recommendations based on identified issues."""
-        recommendations = []
-        
-        for issue in issues:
-            if "accuracy" in issue:
-                recommendations.append("Try ensemble methods or architecture search")
-            elif "recall" in issue:
-                recommendations.append("Apply class balancing techniques")
-            elif "speed" in issue:
-                recommendations.append("Optimize model architecture or use quantization")
-        
-        return recommendations
-    
+
+        return findings
+
     def get_analysis_history(self):
-        """Return complete analysis history."""
+        """Return the complete Trawler analysis history."""
         return self.analysis_history
-    
+
     def save_analysis_report(self, filename="trawler_analysis.json"):
-        """Save analysis history to JSON file."""
-        with open(filename, 'w') as f:
-            json.dump(self.analysis_history, f, indent=2)
+        """Save Trawler analysis history to a JSON file."""
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(
+                self.analysis_history,
+                f,
+                indent=2,
+                ensure_ascii=False,
+        )
