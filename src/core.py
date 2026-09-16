@@ -1,154 +1,810 @@
 # src/core.py
 """
-Core module for the NeuroCortex SRDF framework.
-Main orchestrator of the Trawler-Generator-Arbiter cycle.
+NeuroCortex SRDF Core Orchestration.
+
+Controlled SRDF cycle:
+
+Observe
+    ->
+Analyze
+    ->
+Generate
+    ->
+Evaluate
+    ->
+Authorize
+    ->
+Commit / Reject
+    ->
+Updated State
 """
 
-import time
 import json
-from datetime import datetime
+from copy import deepcopy
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional
+
+import numpy as np
+
+from sklearn.ensemble import (
+    GradientBoostingClassifier,
+    RandomForestClassifier,
+)
+
+from sklearn.metrics import (
+    accuracy_score,
+    f1_score,
+    precision_score,
+    recall_score,
+)
+
+from imblearn.over_sampling import SMOTE
+
 from .trawler import Trawler
 from .generator import Generator
 from .arbiter import Arbiter
 
+
 class SRDFFramework:
-    """
-    Self-Reinforcing Development Framework main class.
-    Orchestrates the continuous improvement cycle.
-    """
-    
+    """Main NeuroCortex SRDF orchestrator."""
+
     def __init__(self, config=None):
-        self.config = config or self._default_config()
-        self.trawler = Trawler()
-        self.generator = Generator()
-        self.arbiter = Arbiter(
-            validation_threshold=self.config.get("validation_threshold", 0.8)
+
+        self.config = self._default_config()
+
+        if config:
+            self.config.update(config)
+
+        self.trawler = Trawler(
+            imbalance_threshold=
+            self.config["imbalance_threshold"]
         )
-        
-        self.cycle_count = 0
-        self.cycle_history = []
-        self.is_running = False
-    
-    def _default_config(self):
-        """Return default configuration."""
-        return {
-            "cycle_interval": 3600,  # 1 hour between cycles
-            "validation_threshold": 0.8,
-            "max_cycles": 100,
-            "performance_metrics": ["accuracy", "precision", "recall", "f1_score"],
-            "log_level": "info"
+
+        self.generator = Generator()
+
+        self.arbiter = Arbiter(
+            validation_threshold=
+            self.config["validation_threshold"],
+
+            resource_budget=
+            self.config["resource_budget"],
+        )
+
+        self.state = {
+            "graph": [
+                "Input",
+                "RandomForest",
+                "Output",
+            ],
+
+            "version": 0,
+
+            "rejection_count": 0,
         }
-    
-    def start_evolution(self, initial_model=None, data=None, labels=None):
+
+        self.cycle_count = 0
+
+        self.cycle_history: List[
+            Dict[str, Any]
+        ] = []
+
+        self.is_running = False
+
+    @staticmethod
+    def _default_config():
+
+        return {
+            "cycle_interval": 3600,
+
+            "validation_threshold": 0.85,
+
+            "resource_budget": 3.0,
+
+            "max_cycles": 100,
+
+            "imbalance_threshold": 3.0,
+
+            "random_seed": 42,
+
+            "k_max": 3,
+
+            "w_accuracy": 0.50,
+
+            "w_safety": 0.30,
+
+            "w_efficiency": 0.20,
+        }
+
+    @staticmethod
+    def _calculate_metrics(
+        y_true,
+        y_pred,
+    ):
+
+        return {
+            "accuracy":
+                float(
+                    accuracy_score(
+                        y_true,
+                        y_pred,
+                    )
+                ),
+
+            "precision":
+                float(
+                    precision_score(
+                        y_true,
+                        y_pred,
+                        zero_division=0,
+                    )
+                ),
+
+            "recall":
+                float(
+                    recall_score(
+                        y_true,
+                        y_pred,
+                        zero_division=0,
+                    )
+                ),
+
+            "f1":
+                float(
+                    f1_score(
+                        y_true,
+                        y_pred,
+                        zero_division=0,
+                    )
+                ),
+        }
+
+    def _evaluate_candidate(
+        self,
+        candidate: Dict[str, Any],
+        X_train,
+        y_train,
+        X_test,
+        y_test,
+    ) -> Dict[str, Any]:
         """
-        Start the autonomous evolution process.
-        
-        Args:
-            initial_model: Initial machine learning model
-            data: Training/validation data
-            labels: Corresponding labels
-            
-        Returns:
-            Evolution results
+        Evaluate one structural candidate.
+
+        The test set is never used for training.
         """
+
+        test_fingerprint_before = (
+            float(np.sum(X_test)),
+            float(np.mean(X_test)),
+            int(len(y_test)),
+        )
+
+        seed = self.config[
+            "random_seed"
+        ]
+
+        # ------------------------------------------------------
+        # Candidate 1
+        # ------------------------------------------------------
+
+        if candidate["name"] == "GradientBoosting":
+
+            model = GradientBoostingClassifier(
+                n_estimators=200,
+                learning_rate=0.1,
+                random_state=seed,
+            )
+
+            model.fit(
+                X_train,
+                y_train,
+            )
+
+            predictions = model.predict(
+                X_test
+            )
+
+        # ------------------------------------------------------
+        # Candidate 2
+        # ------------------------------------------------------
+
+        elif candidate["name"] == "SMOTE_RandomForest":
+
+            smote = SMOTE(
+                random_state=seed
+            )
+
+            X_resampled, y_resampled = (
+                smote.fit_resample(
+                    X_train,
+                    y_train,
+                )
+            )
+
+            model = RandomForestClassifier(
+                n_estimators=100,
+                random_state=seed,
+            )
+
+            model.fit(
+                X_resampled,
+                y_resampled,
+            )
+
+            predictions = model.predict(
+                X_test
+            )
+
+        else:
+
+            raise ValueError(
+                f"Unknown candidate: "
+                f"{candidate['name']}"
+            )
+
+        # ------------------------------------------------------
+        # Metrics
+        # ------------------------------------------------------
+
+        metrics = self._calculate_metrics(
+            y_test,
+            predictions,
+        )
+
+        # ------------------------------------------------------
+        # Safety fingerprint
+        # ------------------------------------------------------
+
+        test_fingerprint_after = (
+            float(np.sum(X_test)),
+            float(np.mean(X_test)),
+            int(len(y_test)),
+        )
+
+        safety_checks = {
+
+            "finite_predictions":
+                bool(
+                    np.all(
+                        np.isfinite(
+                            predictions
+                        )
+                    )
+                ),
+
+            "finite_metrics":
+                bool(
+                    all(
+                        np.isfinite(
+                            list(
+                                metrics.values()
+                            )
+                        )
+                    )
+                ),
+
+            "test_set_unchanged":
+                bool(
+                    test_fingerprint_before
+                    ==
+                    test_fingerprint_after
+                ),
+        }
+
+        safety_pass = bool(
+            all(
+                safety_checks.values()
+            )
+        )
+
+        # ------------------------------------------------------
+        # Efficiency
+        # ------------------------------------------------------
+
+        efficiency = float(
+            min(
+                1.0,
+
+                self.config[
+                    "resource_budget"
+                ]
+                /
+                candidate[
+                    "resource_cost"
+                ],
+            )
+        )
+
+        # ------------------------------------------------------
+        # Utility
+        # ------------------------------------------------------
+
+        utility = float(
+
+            self.config[
+                "w_accuracy"
+            ]
+            *
+            metrics[
+                "accuracy"
+            ]
+
+            +
+
+            self.config[
+                "w_safety"
+            ]
+            *
+            float(
+                safety_pass
+            )
+
+            +
+
+            self.config[
+                "w_efficiency"
+            ]
+            *
+            efficiency
+        )
+
+        result = deepcopy(
+            candidate
+        )
+
+        result.update({
+
+            "metrics":
+                metrics,
+
+            "safety_checks":
+                safety_checks,
+
+            "safety_pass":
+                safety_pass,
+
+            "efficiency":
+                efficiency,
+
+            "utility":
+                utility,
+
+            "predictions":
+                predictions,
+        })
+
+        return result
+
+    def run_cycle(
+        self,
+        X_train,
+        y_train,
+        X_test,
+        y_test,
+    ) -> Dict[str, Any]:
+        """
+        Execute one complete SRDF cycle.
+        """
+
+        cycle_start = datetime.now(
+            timezone.utc
+        )
+
+        state_before = deepcopy(
+            self.state
+        )
+
+        # ======================================================
+        # PHASE 1 — OBSERVE / ANALYZE
+        # ======================================================
+
+        findings = self.trawler.analyze(
+            y_train,
+            self.state,
+        )
+
+        # ======================================================
+        # PHASE 2 — GENERATE
+        # ======================================================
+
+        candidates = (
+            self.generator.propose_solutions(
+                findings
+            )
+        )
+
+        # ======================================================
+        # PHASE 3 — EVALUATE
+        # ======================================================
+
+        evaluated_candidates = []
+
+        for candidate in candidates:
+
+            evaluated_candidates.append(
+                self._evaluate_candidate(
+                    candidate,
+                    X_train,
+                    y_train,
+                    X_test,
+                    y_test,
+                )
+            )
+
+        # ======================================================
+        # PHASE 4 — AUTHORIZE
+        # ======================================================
+
+        validation_results = (
+            self.arbiter.validate_solutions(
+                evaluated_candidates,
+                self.state["graph"],
+            )
+        )
+
+        selected = (
+            validation_results[
+                "selected_solution"
+            ]
+        )
+
+        # ======================================================
+        # PHASE 5 — COMMIT / REJECT
+        # ======================================================
+
+        if selected is not None:
+
+            old_graph = (
+                self.state["graph"].copy()
+            )
+
+            self.state["graph"] = (
+                selected["graph"].copy()
+            )
+
+            self.state["version"] += 1
+
+            self.state[
+                "rejection_count"
+            ] = 0
+
+            transition = {
+
+                "decision":
+                    "ACCEPT",
+
+                "candidate":
+                    selected["name"],
+
+                "old_graph":
+                    old_graph,
+
+                "new_graph":
+                    self.state[
+                        "graph"
+                    ].copy(),
+
+                "state_version":
+                    self.state[
+                        "version"
+                    ],
+            }
+
+        else:
+
+            self.state[
+                "rejection_count"
+            ] += 1
+
+            backoff_triggered = bool(
+
+                self.state[
+                    "rejection_count"
+                ]
+                >=
+                self.config[
+                    "k_max"
+                ]
+            )
+
+            if backoff_triggered:
+
+                self.state[
+                    "rejection_count"
+                ] = 0
+
+            transition = {
+
+                "decision":
+                    "REJECT_ALL",
+
+                "graph_preserved":
+                    True,
+
+                "backoff_triggered":
+                    backoff_triggered,
+
+                "rejection_count":
+                    self.state[
+                        "rejection_count"
+                    ],
+
+                "state_version":
+                    self.state[
+                        "version"
+                    ],
+            }
+
+        # ======================================================
+        # CYCLE RESULT
+        # ======================================================
+
+        cycle_result = {
+
+            "cycle_number":
+                self.cycle_count,
+
+            "start_time":
+                cycle_start.isoformat(),
+
+            "duration_seconds":
+                (
+                    datetime.now(
+                        timezone.utc
+                    )
+                    -
+                    cycle_start
+                ).total_seconds(),
+
+            "state_before":
+                state_before,
+
+            "trawler_findings":
+                findings,
+
+            "proposed_solutions":
+                candidates,
+
+            "evaluated_candidates":
+                evaluated_candidates,
+
+            "validation_results":
+                validation_results,
+
+            "selected_solution":
+                (
+                    selected["name"]
+                    if selected is not None
+                    else None
+                ),
+
+            "state_transition":
+                transition,
+
+            "state_after":
+                deepcopy(
+                    self.state
+                ),
+        }
+
+        self.cycle_count += 1
+
+        self.cycle_history.append(
+            cycle_result
+        )
+
+        return cycle_result
+
+    def start_evolution(
+        self,
+        X_train,
+        y_train,
+        X_test,
+        y_test,
+        max_cycles: Optional[int] = None,
+    ):
+        """
+        Run the SRDF loop.
+
+        cycle_interval=0 disables sleeping, which is useful
+        for tests and controlled experiments.
+        """
+
         self.is_running = True
+
         results = []
-        
-        print("🚀 Starting NeuroCortex SRDF Evolution...")
-        print(f"📊 Configuration: {json.dumps(self.config, indent=2)}")
-        
-        for cycle in range(self.config["max_cycles"]):
+
+        cycles = (
+
+            self.config[
+                "max_cycles"
+            ]
+
+            if max_cycles is None
+
+            else int(
+                max_cycles
+            )
+        )
+
+        for _ in range(cycles):
+
             if not self.is_running:
                 break
-                
-            cycle_result = self._run_cycle(cycle, initial_model, data, labels)
-            results.append(cycle_result)
-            
-            print(f"🔄 Cycle {cycle + 1}/{self.config['max_cycles']} completed")
-            print(f"   Selected: {cycle_result['selected_solution']['proposed_solution']}")
-            
-            time.sleep(self.config["cycle_interval"])
-        
+
+            result = self.run_cycle(
+                X_train,
+                y_train,
+                X_test,
+                y_test,
+            )
+
+            results.append(
+                result
+            )
+
+            if (
+                self.config[
+                    "cycle_interval"
+                ]
+                > 0
+            ):
+
+                import time
+
+                time.sleep(
+                    self.config[
+                        "cycle_interval"
+                    ]
+                )
+
         return results
-    
-    def _run_cycle(self, cycle_number, model, data, labels):
-        """Execute one complete SRDF cycle."""
-        cycle_start = datetime.now()
-        
-        # Phase 1: Trawler Analysis
-        analysis_results = self.trawler.analyze_performance(model, data, labels)
-        
-        # Phase 2: Generator Proposals
-        solutions = self.generator.propose_solutions(analysis_results)
-        
-        # Phase 3: Arbiter Validation
-        current_performance = analysis_results.get("performance_metrics", {})
-        validation_results = self.arbiter.validate_solutions(solutions, current_performance)
-        
-        # Phase 4: Implementation (simulated)
-        implementation_result = self._implement_solution(
-            validation_results["selected_solution"]
-        )
-        
-        cycle_result = {
-            "cycle_number": cycle_number,
-            "start_time": cycle_start.isoformat(),
-            "duration_seconds": (datetime.now() - cycle_start).total_seconds(),
-            "analysis_results": analysis_results,
-            "proposed_solutions": solutions,
-            "validation_results": validation_results,
-            "implementation_result": implementation_result,
-            "selected_solution": validation_results["selected_solution"]
-        }
-        
-        self.cycle_count += 1
-        self.cycle_history.append(cycle_result)
-        
-        return cycle_result
-    
-    def _implement_solution(self, solution):
-        """Simulate solution implementation."""
-        # In a real implementation, this would actually modify the model
-        return {
-            "status": "success",
-            "implementation_time": random.uniform(1.0, 5.0),
-            "changes_applied": True,
-            "rollback_possible": True,
-            "notes": f"Implemented {solution['proposed_solution']}"
-        }
-    
+
     def stop_evolution(self):
-        """Stop the evolution process."""
+        """Stop the SRDF loop."""
+
         self.is_running = False
-        print("⏹️ Evolution process stopped")
-    
+
     def get_status(self):
         """Return current framework status."""
+
         return {
-            "is_running": self.is_running,
-            "cycle_count": self.cycle_count,
-            "config": self.config,
-            "last_activity": datetime.now().isoformat()
+
+            "is_running":
+                self.is_running,
+
+            "cycle_count":
+                self.cycle_count,
+
+            "config":
+                deepcopy(
+                    self.config
+                ),
+
+            "state":
+                deepcopy(
+                    self.state
+                ),
+
+            "last_activity":
+                datetime.now(
+                    timezone.utc
+                ).isoformat(),
         }
-    
-    def save_progress(self, filename="neurocortex_progress.json"):
-        """Save evolution progress to file."""
+
+    def save_progress(
+        self,
+        filename="neurocortex_progress.json",
+    ):
+        """Save current SRDF execution history."""
+
         progress_data = {
-            "cycle_history": self.cycle_history,
-            "config": self.config,
-            "save_time": datetime.now().isoformat()
+
+            "cycle_history":
+                self._json_safe(
+                    self.cycle_history
+                ),
+
+            "state":
+                self._json_safe(
+                    self.state
+                ),
+
+            "config":
+                self._json_safe(
+                    self.config
+                ),
+
+            "save_time":
+                datetime.now(
+                    timezone.utc
+                ).isoformat(),
         }
-        
-        with open(filename, 'w') as f:
-            json.dump(progress_data, f, indent=2)
-        
-        print(f"💾 Progress saved to {filename}")
-    
-    def load_config(self, config):
+
+        with open(
+            filename,
+            "w",
+            encoding="utf-8",
+        ) as f:
+
+            json.dump(
+                progress_data,
+                f,
+                indent=2,
+                ensure_ascii=False,
+            )
+
+    def load_config(
+        self,
+        config,
+    ):
         """Update framework configuration."""
-        self.config.update(config)
-        print("⚙️ Configuration updated")
-    
+
+        self.config.update(
+            config
+        )
+
     def get_cycle_history(self):
         """Return complete cycle history."""
+
         return self.cycle_history
+
+    @staticmethod
+    def _json_safe(value):
+        """
+        Convert NumPy values into JSON-compatible values.
+        """
+
+        if isinstance(
+            value,
+            np.generic,
+        ):
+            return value.item()
+
+        if isinstance(
+            value,
+            np.ndarray,
+        ):
+            return value.tolist()
+
+        if isinstance(
+            value,
+            dict,
+        ):
+
+            return {
+                str(key):
+                    SRDFFramework._json_safe(
+                        val
+                    )
+
+                for key, val
+                in value.items()
+            }
+
+        if isinstance(
+            value,
+            list,
+        ):
+
+            return [
+                SRDFFramework._json_safe(
+                    item
+                )
+
+                for item in value
+            ]
+
+        if isinstance(
+            value,
+            tuple,
+        ):
+
+            return [
+                SRDFFramework._json_safe(
+                    item
+                )
+
+                for item in value
+            ]
+
+        return value
