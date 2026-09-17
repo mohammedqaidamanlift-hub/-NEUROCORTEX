@@ -70,6 +70,10 @@ class TestSRDFFramework(unittest.TestCase):
             self.y_test,
         )
 
+        # --------------------------------------------------
+        # Required cycle-result fields
+        # --------------------------------------------------
+
         self.assertIn(
             "trawler_findings",
             result,
@@ -90,51 +94,125 @@ class TestSRDFFramework(unittest.TestCase):
             result,
         )
 
-        selected_name = (
-            result["selected_solution"]
+        # --------------------------------------------------
+        # Trawler must detect the class imbalance
+        # --------------------------------------------------
+
+        self.assertTrue(
+            result[
+                "trawler_findings"
+            ][
+                "class_imbalance"
+            ]
         )
+
+        # --------------------------------------------------
+        # At least one candidate must be evaluated
+        # --------------------------------------------------
+
+        self.assertGreater(
+            len(
+                result[
+                    "evaluated_candidates"
+                ]
+            ),
+            0,
+        )
+
+        # --------------------------------------------------
+        # Authorization must select only an authorized
+        # candidate. The test must NOT prescribe which
+        # candidate wins.
+        # --------------------------------------------------
+
+        selected_name = result[
+            "selected_solution"
+        ]
 
         self.assertIsNotNone(
             selected_name
         )
 
-        candidate_names = [
-            candidate["name"]
+        authorized_candidates = [
+            candidate
             for candidate
             in result[
-                "evaluated_candidates"
+                "validation_results"
+            ][
+                "validated_solutions"
             ]
+            if candidate.get(
+                "authorization",
+                {}
+            ).get(
+                "accepted",
+                False,
+            )
         ]
+
+        self.assertGreater(
+            len(
+                authorized_candidates
+            ),
+            0,
+        )
+
+        authorized_names = {
+            candidate["name"]
+            for candidate
+            in authorized_candidates
+        }
 
         self.assertIn(
             selected_name,
-            candidate_names,
+            authorized_names,
         )
+
+        # --------------------------------------------------
+        # The selected candidate must correspond to the
+        # graph committed to the framework state.
+        # --------------------------------------------------
 
         selected_candidate = next(
             candidate
             for candidate
-            in result[
-                "evaluated_candidates"
-            ]
+            in authorized_candidates
             if candidate["name"]
             == selected_name
         )
 
-        self.assertTrue(
+        self.assertEqual(
+            result[
+                "state_after"
+            ][
+                "graph"
+            ],
             selected_candidate[
-                "authorization"
-            ]["accepted"]
+                "graph"
+            ],
         )
 
-        self.assertEqual(
-            result["state_after"]["graph"],
-            selected_candidate["graph"],
-        )
+        # --------------------------------------------------
+        # A successful authorization must increment the
+        # framework version exactly once.
+        # --------------------------------------------------
 
         self.assertEqual(
-            result["state_after"]["version"],
+            result[
+                "state_after"
+            ][
+                "version"
+            ],
             1,
+        )
+
+        self.assertEqual(
+            result[
+                "state_transition"
+            ][
+                "decision"
+            ],
+            "ACCEPT",
         )
 
     def test_json_safe_numpy_values(self):
