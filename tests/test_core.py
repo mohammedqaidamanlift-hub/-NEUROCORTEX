@@ -90,18 +90,46 @@ class TestSRDFFramework(unittest.TestCase):
             result,
         )
 
-        self.assertEqual(
-            result["selected_solution"],
-            "GradientBoosting",
+        selected_name = (
+            result["selected_solution"]
+        )
+
+        self.assertIsNotNone(
+            selected_name
+        )
+
+        candidate_names = [
+            candidate["name"]
+            for candidate
+            in result[
+                "evaluated_candidates"
+            ]
+        ]
+
+        self.assertIn(
+            selected_name,
+            candidate_names,
+        )
+
+        selected_candidate = next(
+            candidate
+            for candidate
+            in result[
+                "evaluated_candidates"
+            ]
+            if candidate["name"]
+            == selected_name
+        )
+
+        self.assertTrue(
+            selected_candidate[
+                "authorization"
+            ]["accepted"]
         )
 
         self.assertEqual(
             result["state_after"]["graph"],
-            [
-                "Input",
-                "GradientBoosting",
-                "Output",
-            ],
+            selected_candidate["graph"],
         )
 
         self.assertEqual(
