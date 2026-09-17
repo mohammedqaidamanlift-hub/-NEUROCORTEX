@@ -19,6 +19,7 @@ Updated State
 """
 
 import json
+import uuid
 from copy import deepcopy
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
@@ -82,6 +83,10 @@ class SRDFFramework:
         }
 
         self.cycle_count = 0
+
+        # Unique identifier for the current
+        # controlled execution run.
+        self.run_id = None
 
         self.cycle_history: List[
             Dict[str, Any]
@@ -321,165 +326,233 @@ class SRDFFramework:
         y_train,
         X_test,
         y_test,
+        run_id: Optional[str] = None,
     ) -> Dict[str, Any]:
 
         cycle_start = datetime.now(
             timezone.utc
         )
 
+        if run_id is None:
+            run_id = (
+                f"NC-SRDF-"
+                f"{cycle_start.strftime('%Y%m%dT%H%M%S%fZ')}-"
+                f"{uuid.uuid4().hex[:8]}"
+            )
+
+        self.run_id = run_id
+
         state_before = deepcopy(
             self.state
         )
 
-        findings = self.trawler.analyze(
-            y_train,
-            self.state,
-        )
+        try:
 
-        candidates = (
-            self.generator.propose_solutions(
-                findings
+            findings = self.trawler.analyze(
+                y_train,
+                self.state,
             )
-        )
 
-        evaluated_candidates = []
-
-        for candidate in candidates:
-
-            evaluated_candidates.append(
-                self._evaluate_candidate(
-                    candidate,
-                    X_train,
-                    y_train,
-                    X_test,
-                    y_test,
+            candidates = (
+                self.generator.propose_solutions(
+                    findings
                 )
             )
 
-        validation_results = (
-            self.arbiter.validate_solutions(
-                evaluated_candidates,
-                self.state["graph"],
-            )
-        )
+            evaluated_candidates = []
 
-        selected = (
-            validation_results[
-                "selected_solution"
-            ]
-        )
+            for candidate in candidates:
 
-        if selected is not None:
+                evaluated_candidates.append(
+                    self._evaluate_candidate(
+                        candidate,
+                        X_train,
+                        y_train,
+                        X_test,
+                        y_test,
+                    )
+                )
 
-            old_graph = (
-                self.state["graph"].copy()
-            )
-
-            self.state["graph"] = (
-                selected["graph"].copy()
+            validation_results = (
+                self.arbiter.validate_solutions(
+                    evaluated_candidates,
+                    self.state["graph"],
+                )
             )
 
-            self.state["version"] += 1
-
-            self.state[
-                "rejection_count"
-            ] = 0
-
-            transition = {
-                "decision": "ACCEPT",
-                "candidate": selected["name"],
-                "old_graph": old_graph,
-                "new_graph":
-                    self.state["graph"].copy(),
-                "state_version":
-                    self.state["version"],
-            }
-
-        else:
-
-            self.state[
-                "rejection_count"
-            ] += 1
-
-            backoff_triggered = bool(
-                self.state[
-                    "rejection_count"
+            selected = (
+                validation_results[
+                    "selected_solution"
                 ]
-                >=
-                self.config["k_max"]
             )
 
-            if backoff_triggered:
+            if selected is not None:
+
+                old_graph = (
+                    self.state["graph"].copy()
+                )
+
+                self.state["graph"] = (
+                    selected["graph"].copy()
+                )
+
+                self.state["version"] += 1
 
                 self.state[
                     "rejection_count"
                 ] = 0
 
-            transition = {
-                "decision": "REJECT_ALL",
-                "graph_preserved": True,
-                "backoff_triggered":
-                    backoff_triggered,
-                "rejection_count":
-                    self.state["rejection_count"],
-                "state_version":
-                    self.state["version"],
+                transition = {
+                    "decision": "ACCEPT",
+                    "candidate": selected["name"],
+                    "old_graph": old_graph,
+                    "new_graph":
+                        self.state["graph"].copy(),
+                    "state_version":
+                        self.state["version"],
+                }
+
+            else:
+
+                self.state[
+                    "rejection_count"
+                ] += 1
+
+                backoff_triggered = bool(
+                    self.state[
+                        "rejection_count"
+                    ]
+                    >=
+                    self.config["k_max"]
+                )
+
+                if backoff_triggered:
+
+                    self.state[
+                        "rejection_count"
+                    ] = 0
+
+                transition = {
+                    "decision": "REJECT_ALL",
+                    "graph_preserved": True,
+                    "backoff_triggered":
+                        backoff_triggered,
+                    "rejection_count":
+                        self.state["rejection_count"],
+                    "state_version":
+                        self.state["version"],
+                }
+
+            cycle_result = {
+
+                "run_id":
+                    run_id,
+
+                "status":
+                    "SUCCESS",
+
+                "error":
+                    None,
+
+                "cycle_number":
+                    self.cycle_count,
+
+                "start_time":
+                    cycle_start.isoformat(),
+
+                "duration_seconds":
+                    (
+                        datetime.now(
+                            timezone.utc
+                        )
+                        - cycle_start
+                    ).total_seconds(),
+
+                "state_before":
+                    state_before,
+
+                "trawler_findings":
+                    findings,
+
+                "proposed_solutions":
+                    candidates,
+
+                "evaluated_candidates":
+                    evaluated_candidates,
+
+                "validation_results":
+                    validation_results,
+
+                "selected_solution":
+                    (
+                        selected["name"]
+                        if selected is not None
+                        else None
+                    ),
+
+                "state_transition":
+                    transition,
+
+                "state_after":
+                    deepcopy(
+                        self.state
+                    ),
             }
 
-        cycle_result = {
+            self.cycle_count += 1
 
-            "cycle_number":
-                self.cycle_count,
+            self.cycle_history.append(
+                cycle_result
+            )
 
-            "start_time":
-                cycle_start.isoformat(),
+            return cycle_result
 
-            "duration_seconds":
-                (
-                    datetime.now(
-                        timezone.utc
-                    )
-                    - cycle_start
-                ).total_seconds(),
+        except Exception as exc:
 
-            "state_before":
-                state_before,
+            failure_result = {
 
-            "trawler_findings":
-                findings,
+                "run_id":
+                    run_id,
 
-            "proposed_solutions":
-                candidates,
+                "status":
+                    "FAILED",
 
-            "evaluated_candidates":
-                evaluated_candidates,
+                "error": {
+                    "type":
+                        type(exc).__name__,
 
-            "validation_results":
-                validation_results,
+                    "message":
+                        str(exc),
+                },
 
-            "selected_solution":
-                (
-                    selected["name"]
-                    if selected is not None
-                    else None
-                ),
+                "cycle_number":
+                    self.cycle_count,
 
-            "state_transition":
-                transition,
+                "start_time":
+                    cycle_start.isoformat(),
 
-            "state_after":
-                deepcopy(
-                    self.state
-                ),
-        }
+                "duration_seconds":
+                    (
+                        datetime.now(
+                            timezone.utc
+                        )
+                        - cycle_start
+                    ).total_seconds(),
 
-        self.cycle_count += 1
+                "state_before":
+                    state_before,
 
-        self.cycle_history.append(
-            cycle_result
-        )
+                "state_after":
+                    deepcopy(
+                        self.state
+                    ),
+            }
 
-        return cycle_result
+            self.cycle_history.append(
+                failure_result
+            )
+
+            raise
 
     def start_evolution(
         self,
