@@ -1,4 +1,3 @@
-# src/core.py
 """
 NeuroCortex SRDF Core Orchestration.
 
@@ -166,11 +165,6 @@ class SRDFFramework:
         X_test,
         y_test,
     ) -> Dict[str, Any]:
-        """
-        Evaluate one structural candidate.
-
-        The test set is never used for training.
-        """
 
         test_fingerprint_before = (
             float(np.sum(X_test)),
@@ -181,10 +175,6 @@ class SRDFFramework:
         seed = self.config[
             "random_seed"
         ]
-
-        # ------------------------------------------------------
-        # Candidate 1
-        # ------------------------------------------------------
 
         if candidate["name"] == "GradientBoosting":
 
@@ -202,10 +192,6 @@ class SRDFFramework:
             predictions = model.predict(
                 X_test
             )
-
-        # ------------------------------------------------------
-        # Candidate 2
-        # ------------------------------------------------------
 
         elif candidate["name"] == "SMOTE_RandomForest":
 
@@ -241,18 +227,10 @@ class SRDFFramework:
                 f"{candidate['name']}"
             )
 
-        # ------------------------------------------------------
-        # Metrics
-        # ------------------------------------------------------
-
         metrics = self._calculate_metrics(
             y_test,
             predictions,
         )
-
-        # ------------------------------------------------------
-        # Safety fingerprint
-        # ------------------------------------------------------
 
         test_fingerprint_after = (
             float(np.sum(X_test)),
@@ -296,14 +274,9 @@ class SRDFFramework:
             )
         )
 
-        # ------------------------------------------------------
-        # Efficiency
-        # ------------------------------------------------------
-
         efficiency = float(
             min(
                 1.0,
-
                 self.config[
                     "resource_budget"
                 ]
@@ -314,63 +287,31 @@ class SRDFFramework:
             )
         )
 
-        # ------------------------------------------------------
-        # Utility
-        # ------------------------------------------------------
-
         utility = float(
-
-            self.config[
-                "w_accuracy"
-            ]
-            *
-            metrics[
-                "accuracy"
-            ]
-
+            self.config["w_accuracy"]
+            * metrics["accuracy"]
             +
-
-            self.config[
-                "w_safety"
-            ]
-            *
-            float(
-                safety_pass
-            )
-
+            self.config["w_safety"]
+            * float(safety_pass)
             +
-
-            self.config[
-                "w_efficiency"
-            ]
-            *
-            efficiency
+            self.config["w_efficiency"]
+            * efficiency
         )
 
         result = deepcopy(
             candidate
         )
 
-        result.update({
-
-            "metrics":
-                metrics,
-
-            "safety_checks":
-                safety_checks,
-
-            "safety_pass":
-                safety_pass,
-
-            "efficiency":
-                efficiency,
-
-            "utility":
-                utility,
-
-            "predictions":
-                predictions,
-        })
+        result.update(
+            {
+                "metrics": metrics,
+                "safety_checks": safety_checks,
+                "safety_pass": safety_pass,
+                "efficiency": efficiency,
+                "utility": utility,
+                "predictions": predictions,
+            }
+        )
 
         return result
 
@@ -381,9 +322,6 @@ class SRDFFramework:
         X_test,
         y_test,
     ) -> Dict[str, Any]:
-        """
-        Execute one complete SRDF cycle.
-        """
 
         cycle_start = datetime.now(
             timezone.utc
@@ -393,28 +331,16 @@ class SRDFFramework:
             self.state
         )
 
-        # ======================================================
-        # PHASE 1 — OBSERVE / ANALYZE
-        # ======================================================
-
         findings = self.trawler.analyze(
             y_train,
             self.state,
         )
-
-        # ======================================================
-        # PHASE 2 — GENERATE
-        # ======================================================
 
         candidates = (
             self.generator.propose_solutions(
                 findings
             )
         )
-
-        # ======================================================
-        # PHASE 3 — EVALUATE
-        # ======================================================
 
         evaluated_candidates = []
 
@@ -430,10 +356,6 @@ class SRDFFramework:
                 )
             )
 
-        # ======================================================
-        # PHASE 4 — AUTHORIZE
-        # ======================================================
-
         validation_results = (
             self.arbiter.validate_solutions(
                 evaluated_candidates,
@@ -446,10 +368,6 @@ class SRDFFramework:
                 "selected_solution"
             ]
         )
-
-        # ======================================================
-        # PHASE 5 — COMMIT / REJECT
-        # ======================================================
 
         if selected is not None:
 
@@ -468,25 +386,13 @@ class SRDFFramework:
             ] = 0
 
             transition = {
-
-                "decision":
-                    "ACCEPT",
-
-                "candidate":
-                    selected["name"],
-
-                "old_graph":
-                    old_graph,
-
+                "decision": "ACCEPT",
+                "candidate": selected["name"],
+                "old_graph": old_graph,
                 "new_graph":
-                    self.state[
-                        "graph"
-                    ].copy(),
-
+                    self.state["graph"].copy(),
                 "state_version":
-                    self.state[
-                        "version"
-                    ],
+                    self.state["version"],
             }
 
         else:
@@ -496,14 +402,11 @@ class SRDFFramework:
             ] += 1
 
             backoff_triggered = bool(
-
                 self.state[
                     "rejection_count"
                 ]
                 >=
-                self.config[
-                    "k_max"
-                ]
+                self.config["k_max"]
             )
 
             if backoff_triggered:
@@ -513,30 +416,15 @@ class SRDFFramework:
                 ] = 0
 
             transition = {
-
-                "decision":
-                    "REJECT_ALL",
-
-                "graph_preserved":
-                    True,
-
+                "decision": "REJECT_ALL",
+                "graph_preserved": True,
                 "backoff_triggered":
                     backoff_triggered,
-
                 "rejection_count":
-                    self.state[
-                        "rejection_count"
-                    ],
-
+                    self.state["rejection_count"],
                 "state_version":
-                    self.state[
-                        "version"
-                    ],
+                    self.state["version"],
             }
-
-        # ======================================================
-        # CYCLE RESULT
-        # ======================================================
 
         cycle_result = {
 
@@ -551,8 +439,7 @@ class SRDFFramework:
                     datetime.now(
                         timezone.utc
                     )
-                    -
-                    cycle_start
+                    - cycle_start
                 ).total_seconds(),
 
             "state_before":
@@ -602,28 +489,15 @@ class SRDFFramework:
         y_test,
         max_cycles: Optional[int] = None,
     ):
-        """
-        Run the SRDF loop.
-
-        cycle_interval=0 disables sleeping, which is useful
-        for tests and controlled experiments.
-        """
 
         self.is_running = True
 
         results = []
 
         cycles = (
-
-            self.config[
-                "max_cycles"
-            ]
-
+            self.config["max_cycles"]
             if max_cycles is None
-
-            else int(
-                max_cycles
-            )
+            else int(max_cycles)
         )
 
         for _ in range(cycles):
@@ -638,23 +512,17 @@ class SRDFFramework:
                 y_test,
             )
 
-            results.append(
-                result
-            )
+            results.append(result)
 
             if (
-                self.config[
-                    "cycle_interval"
-                ]
+                self.config["cycle_interval"]
                 > 0
             ):
 
                 import time
 
                 time.sleep(
-                    self.config[
-                        "cycle_interval"
-                    ]
+                    self.config["cycle_interval"]
                 )
 
         return results
@@ -665,10 +533,8 @@ class SRDFFramework:
         self.is_running = False
 
     def get_status(self):
-        """Return current framework status."""
 
         return {
-
             "is_running":
                 self.is_running,
 
@@ -676,14 +542,10 @@ class SRDFFramework:
                 self.cycle_count,
 
             "config":
-                deepcopy(
-                    self.config
-                ),
+                deepcopy(self.config),
 
             "state":
-                deepcopy(
-                    self.state
-                ),
+                deepcopy(self.state),
 
             "last_activity":
                 datetime.now(
@@ -695,10 +557,8 @@ class SRDFFramework:
         self,
         filename="neurocortex_progress.json",
     ):
-        """Save current SRDF execution history."""
 
         progress_data = {
-
             "cycle_history":
                 self._json_safe(
                     self.cycle_history
@@ -733,26 +593,14 @@ class SRDFFramework:
                 ensure_ascii=False,
             )
 
-    def load_config(
-        self,
-        config,
-    ):
-        """Update framework configuration."""
-
-        self.config.update(
-            config
-        )
+    def load_config(self, config):
+        self.config.update(config)
 
     def get_cycle_history(self):
-        """Return complete cycle history."""
-
         return self.cycle_history
 
     @staticmethod
     def _json_safe(value):
-        """
-        Convert NumPy values into JSON-compatible values.
-        """
 
         if isinstance(
             value,
@@ -776,9 +624,7 @@ class SRDFFramework:
                     SRDFFramework._json_safe(
                         val
                     )
-
-                for key, val
-                in value.items()
+                for key, val in value.items()
             }
 
         if isinstance(
@@ -790,7 +636,6 @@ class SRDFFramework:
                 SRDFFramework._json_safe(
                     item
                 )
-
                 for item in value
             ]
 
@@ -803,7 +648,6 @@ class SRDFFramework:
                 SRDFFramework._json_safe(
                     item
                 )
-
                 for item in value
             ]
 
