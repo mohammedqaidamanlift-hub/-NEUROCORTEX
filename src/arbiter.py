@@ -1,116 +1,232 @@
-# src/arbiter.py
 """
-Arbiter module for validating and selecting the most effective solutions.
+NeuroCortex SRDF Arbiter.
+
+Bounded authorization unit for structural candidate selection.
+
+The arbiter does not generate experimental results. It evaluates
+already-observed candidate results against explicit authorization
+conditions and selects the highest-utility authorized candidate.
 """
 
-import numpy as np
-from typing import List, Dict
+from copy import deepcopy
+from datetime import datetime, timezone
+from typing import Any, Dict, List
+
 
 class Arbiter:
-    """Validation unit for selecting optimal solutions."""
-    
-    def __init__(self, validation_threshold: float = 0.8):
-        self.validation_threshold = validation_threshold
+    """Authorization and candidate-selection unit."""
+
+    def __init__(
+        self,
+        validation_threshold: float = 0.85,
+        resource_budget: float = 3.0,
+    ):
+        self.validation_threshold = float(
+            validation_threshold
+        )
+
+        self.resource_budget = float(
+            resource_budget
+        )
+
         self.validation_history = []
         self.selected_solutions = []
-    
-    def validate_solutions(self, solutions: List[Dict], 
-                          current_performance: Dict) -> Dict:
-        """
-        Validate proposed solutions and select the best one.
-        
-        Args:
-            solutions: List of proposed solutions from Generator
-            current_performance: Current model performance metrics
-            
-        Returns:
-            Selected solution with validation results
-        """
-        validated_solutions = []
-        
-        for solution in solutions:
-            validation_result = self._validate_solution(solution, current_performance)
-            validated_solutions.append(validation_result)
-        
-        # Select best solution
-        best_solution = self._select_best_solution(validated_solutions)
-        
-        result = {
-            "timestamp": self._get_current_timestamp(),
-            "validated_solutions": validated_solutions,
-            "selected_solution": best_solution,
-            "validation_threshold": self.validation_threshold
+
+    @staticmethod
+    def _invariant_check(
+        candidate_graph: List[str],
+    ) -> Dict[str, bool]:
+        """Validate structural graph invariants."""
+
+        allowed_nodes = {
+            "Input",
+            "Output",
+            "RandomForest",
+            "GradientBoosting",
+            "SMOTE",
         }
-        
-        self.validation_history.append(result)
-        self.selected_solutions.append(best_solution)
-        
+
+        graph = list(candidate_graph)
+
+        checks = {
+            "starts_with_input": (
+                len(graph) >= 2
+                and graph[0] == "Input"
+            ),
+
+            "ends_with_output": (
+                len(graph) >= 2
+                and graph[-1] == "Output"
+            ),
+
+            "unique_nodes": (
+                len(graph)
+                == len(set(graph))
+            ),
+
+            "allowed_nodes": (
+                set(graph).issubset(
+                    allowed_nodes
+                )
+            ),
+        }
+
+        checks["all_pass"] = bool(
+            all(checks.values())
+        )
+
+        return checks
+
+    def _validate_solution(
+        self,
+        solution: Dict[str, Any],
+        current_graph: List[str],
+    ) -> Dict[str, Any]:
+        """Authorize one already-evaluated candidate."""
+
+        invariant = self._invariant_check(
+            solution.get("graph", [])
+        )
+
+        invariant_pass = bool(
+            invariant["all_pass"]
+        )
+
+        resource_pass = bool(
+            float(
+                solution.get(
+                    "resource_cost",
+                    float("inf"),
+                )
+            )
+            <= self.resource_budget
+        )
+
+        safety_pass = bool(
+            solution.get(
+                "safety_pass",
+                False,
+            )
+        )
+
+        utility = float(
+            solution.get(
+                "utility",
+                0.0,
+            )
+        )
+
+        utility_pass = bool(
+            utility
+            >= self.validation_threshold
+        )
+
+        accepted = bool(
+            invariant_pass
+            and resource_pass
+            and safety_pass
+            and utility_pass
+        )
+
+        result = deepcopy(solution)
+
+        result.update(
+            {
+                "validation_score": utility,
+                "is_valid": accepted,
+                "authorization": {
+                    "accepted": accepted,
+                    "invariant": invariant,
+                    "invariant_pass": invariant_pass,
+                    "resource_pass": resource_pass,
+                    "safety_pass": safety_pass,
+                    "utility_pass": utility_pass,
+                    "current_graph": list(
+                        current_graph
+                    ),
+                    "candidate_graph": list(
+                        solution.get(
+                            "graph",
+                            [],
+                        )
+                    ),
+                },
+            }
+        )
+
         return result
-    
-    def _validate_solution(self, solution: Dict, current_performance: Dict) -> Dict:
-        """Validate a single solution proposal."""
-        # Simulate validation process
-        validation_score = self._calculate_validation_score(solution, current_performance)
-        is_valid = validation_score >= self.validation_threshold
-        
-        return {
-            **solution,
-            "validation_score": validation_score,
-            "is_valid": is_valid,
-            "expected_impact": self._estimate_impact(solution, current_performance)
+
+    def validate_solutions(
+        self,
+        solutions: List[Dict[str, Any]],
+        current_graph: List[str],
+    ) -> Dict[str, Any]:
+        """
+        Validate all evaluated candidates and select one.
+
+        Selection is performed only among candidates satisfying
+        all authorization conditions.
+        """
+
+        validated_solutions = [
+            self._validate_solution(
+                solution,
+                current_graph,
+            )
+            for solution in solutions
+        ]
+
+        valid_solutions = [
+            solution
+            for solution in validated_solutions
+            if solution["is_valid"]
+        ]
+
+        if valid_solutions:
+            best_solution = max(
+                valid_solutions,
+                key=lambda item: item[
+                    "validation_score"
+                ],
+            )
+        else:
+            best_solution = None
+
+        result = {
+            "timestamp": datetime.now(
+                timezone.utc
+            ).isoformat(),
+
+            "validated_solutions":
+                validated_solutions,
+
+            "selected_solution":
+                best_solution,
+
+            "validation_threshold":
+                self.validation_threshold,
+
+            "resource_budget":
+                self.resource_budget,
         }
-    
-    def _calculate_validation_score(self, solution: Dict, current_performance: Dict) -> float:
-        """Calculate validation score for a solution."""
-        base_score = solution.get("confidence_score", 0.5)
-        
-        # Adjust based on complexity (lower complexity = higher score)
-        complexity = solution.get("complexity", "medium")
-        complexity_factor = {
-            "low": 1.2,
-            "medium": 1.0,
-            "high": 0.8
-        }.get(complexity, 1.0)
-        
-        # Adjust based on current performance
-        performance_factor = 1.0
-        if current_performance.get("accuracy", 0) < 0.7:
-            performance_factor = 1.1  # More willing to try solutions if performance is poor
-        
-        return min(1.0, base_score * complexity_factor * performance_factor)
-    
-    def _estimate_impact(self, solution: Dict, current_performance: Dict) -> Dict:
-        """Estimate the potential impact of the solution."""
-        return {
-            "accuracy_improvement": random.uniform(0.02, 0.15),
-            "speed_improvement": random.uniform(0.01, 0.10),
-            "stability_impact": random.choice(["improved", "neutral", "reduced"])
-        }
-    
-    def _select_best_solution(self, validated_solutions: List[Dict]) -> Dict:
-        """Select the best solution from validated options."""
-        valid_solutions = [s for s in validated_solutions if s["is_valid"]]
-        
-        if not valid_solutions:
-            # Fallback to least bad invalid solution if no valid ones
-            valid_solutions = sorted(validated_solutions, 
-                                   key=lambda x: x["validation_score"], 
-                                   reverse=True)[:1]
-        
-        # Select solution with highest validation score
-        best_solution = max(valid_solutions, key=lambda x: x["validation_score"])
-        
-        return best_solution
-    
-    def _get_current_timestamp(self):
-        """Get current timestamp in ISO format."""
-        from datetime import datetime
-        return datetime.now().isoformat()
-    
+
+        self.validation_history.append(
+            deepcopy(result)
+        )
+
+        if best_solution is not None:
+            self.selected_solutions.append(
+                deepcopy(best_solution)
+            )
+
+        return result
+
     def get_validation_history(self):
-        """Return complete validation history."""
+        """Return complete authorization history."""
+
         return self.validation_history
-    
+
     def get_selected_solutions(self):
-        """Return history of all selected solutions."""
+        """Return selected authorized solutions."""
+
         return self.selected_solutions
