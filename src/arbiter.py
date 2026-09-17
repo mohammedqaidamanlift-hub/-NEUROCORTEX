@@ -1,20 +1,24 @@
 """
 NeuroCortex SRDF Arbiter.
 
-Bounded authorization unit for structural candidate selection.
+Authorization and candidate-selection module.
 
-The arbiter does not generate experimental results. It evaluates
-already-observed candidate results against explicit authorization
-conditions and selects the highest-utility authorized candidate.
+The Arbiter validates proposed structural candidates using:
+- structural invariants
+- resource constraints
+- safety status
+- utility threshold
+
+A candidate is authorized only when all required conditions pass.
+The highest-utility authorized candidate is selected.
 """
 
-from copy import deepcopy
 from datetime import datetime, timezone
 from typing import Any, Dict, List
 
 
 class Arbiter:
-    """Authorization and candidate-selection unit."""
+    """Authorization unit for controlled structural adaptation."""
 
     def __init__(
         self,
@@ -33,10 +37,12 @@ class Arbiter:
         self.selected_solutions = []
 
     @staticmethod
-    def _invariant_check(
+    def _check_invariants(
         candidate_graph: List[str],
     ) -> Dict[str, bool]:
-        """Validate structural graph invariants."""
+        """
+        Validate structural graph invariants.
+        """
 
         allowed_nodes = {
             "Input",
@@ -80,26 +86,29 @@ class Arbiter:
     def _validate_solution(
         self,
         solution: Dict[str, Any],
-        current_graph: List[str],
+        current_performance: Dict[str, Any],
     ) -> Dict[str, Any]:
-        """Authorize one already-evaluated candidate."""
+        """
+        Validate one candidate against SRDF authorization rules.
+        """
 
-        invariant = self._invariant_check(
-            solution.get("graph", [])
+        graph = solution.get(
+            "graph",
+            [],
         )
 
-        invariant_pass = bool(
-            invariant["all_pass"]
-        )
-
-        resource_pass = bool(
-            float(
-                solution.get(
-                    "resource_cost",
-                    float("inf"),
-                )
+        resource_cost = float(
+            solution.get(
+                "resource_cost",
+                float("inf"),
             )
-            <= self.resource_budget
+        )
+
+        utility = float(
+            solution.get(
+                "utility",
+                0.0,
+            )
         )
 
         safety_pass = bool(
@@ -109,11 +118,17 @@ class Arbiter:
             )
         )
 
-        utility = float(
-            solution.get(
-                "utility",
-                0.0,
-            )
+        invariant = self._check_invariants(
+            graph
+        )
+
+        invariant_pass = bool(
+            invariant["all_pass"]
+        )
+
+        resource_pass = bool(
+            resource_cost
+            <= self.resource_budget
         )
 
         utility_pass = bool(
@@ -128,77 +143,106 @@ class Arbiter:
             and utility_pass
         )
 
-        result = deepcopy(solution)
+        validation_result = dict(
+            solution
+        )
 
-        result.update(
+        validation_result.update(
             {
-                "validation_score": utility,
-                "is_valid": accepted,
                 "authorization": {
                     "accepted": accepted,
+
                     "invariant": invariant,
-                    "invariant_pass": invariant_pass,
-                    "resource_pass": resource_pass,
-                    "safety_pass": safety_pass,
-                    "utility_pass": utility_pass,
-                    "current_graph": list(
-                        current_graph
-                    ),
-                    "candidate_graph": list(
-                        solution.get(
-                            "graph",
-                            [],
-                        )
-                    ),
-                },
+
+                    "invariant_pass":
+                        invariant_pass,
+
+                    "resource_pass":
+                        resource_pass,
+
+                    "safety_pass":
+                        safety_pass,
+
+                    "utility_pass":
+                        utility_pass,
+
+                    "resource_budget":
+                        self.resource_budget,
+
+                    "validation_threshold":
+                        self.validation_threshold,
+
+                    "current_performance":
+                        current_performance,
+                }
             }
         )
 
-        return result
+        return validation_result
 
     def validate_solutions(
         self,
         solutions: List[Dict[str, Any]],
-        current_graph: List[str],
+        current_performance: Dict[str, Any],
     ) -> Dict[str, Any]:
         """
-        Validate all evaluated candidates and select one.
+        Validate all proposed solutions and select the
+        highest-utility authorized candidate.
 
-        Selection is performed only among candidates satisfying
-        all authorization conditions.
+        If no candidate satisfies all authorization
+        conditions, selected_solution is None.
         """
 
-        validated_solutions = [
-            self._validate_solution(
-                solution,
-                current_graph,
-            )
-            for solution in solutions
-        ]
+        validated_solutions = []
 
-        valid_solutions = [
+        for solution in solutions:
+            validated_solutions.append(
+                self._validate_solution(
+                    solution,
+                    current_performance,
+                )
+            )
+
+        authorized_solutions = [
             solution
             for solution in validated_solutions
-            if solution["is_valid"]
+            if solution[
+                "authorization"
+            ]["accepted"]
         ]
 
-        if valid_solutions:
+        if authorized_solutions:
+
             best_solution = max(
-                valid_solutions,
-                key=lambda item: item[
-                    "validation_score"
-                ],
+                authorized_solutions,
+                key=lambda item: float(
+                    item.get(
+                        "utility",
+                        0.0,
+                    )
+                ),
             )
+
         else:
+
             best_solution = None
 
+        timestamp = datetime.now(
+            timezone.utc
+        ).isoformat()
+
         result = {
-            "timestamp": datetime.now(
-                timezone.utc
-            ).isoformat(),
+            "timestamp": timestamp,
 
             "validated_solutions":
                 validated_solutions,
+
+            "authorized_solutions":
+                [
+                    solution["name"]
+                    for solution
+                    in authorized_solutions
+                ],
 
             "selected_solution":
                 best_solution,
@@ -208,16 +252,24 @@ class Arbiter:
 
             "resource_budget":
                 self.resource_budget,
+
+            "authorization_count":
+                len(
+                    authorized_solutions
+                ),
         }
 
         self.validation_history.append(
-            deepcopy(result)
+            result
         )
 
-        if best_solution is not None:
-            self.selected_solutions.append(
-                deepcopy(best_solution)
+        self.selected_solutions.append(
+            (
+                best_solution["name"]
+                if best_solution is not None
+                else None
             )
+        )
 
         return result
 
@@ -227,6 +279,6 @@ class Arbiter:
         return self.validation_history
 
     def get_selected_solutions(self):
-        """Return selected authorized solutions."""
+        """Return history of selected solution names."""
 
         return self.selected_solutions
