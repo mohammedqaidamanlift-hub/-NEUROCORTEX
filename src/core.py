@@ -16,6 +16,18 @@ Authorize
 Commit / Reject
     ->
 Updated State
+
+Scientific protocol features:
+- Unique run identification
+- UTC timestamps
+- Explicit SUCCESS / FAILED cycle status
+- Failure recording
+- Test-set integrity verification
+- Candidate evaluation
+- Arbiter authorization
+- Explicit state transition
+- Reproducible random seed handling
+- JSON-safe persistence
 """
 
 import json
@@ -84,15 +96,15 @@ class SRDFFramework:
 
         self.cycle_count = 0
 
-        # Unique identifier for the current
-        # controlled execution run.
-        self.run_id = None
-
         self.cycle_history: List[
             Dict[str, Any]
         ] = []
 
         self.is_running = False
+
+        # Current execution identifier.
+        # A specific run_cycle() call may override this.
+        self.run_id: Optional[str] = None
 
     @staticmethod
     def _default_config():
@@ -310,11 +322,21 @@ class SRDFFramework:
         result.update(
             {
                 "metrics": metrics,
-                "safety_checks": safety_checks,
-                "safety_pass": safety_pass,
-                "efficiency": efficiency,
-                "utility": utility,
-                "predictions": predictions,
+
+                "safety_checks":
+                    safety_checks,
+
+                "safety_pass":
+                    safety_pass,
+
+                "efficiency":
+                    efficiency,
+
+                "utility":
+                    utility,
+
+                "predictions":
+                    predictions,
             }
         )
 
@@ -334,6 +356,7 @@ class SRDFFramework:
         )
 
         if run_id is None:
+
             run_id = (
                 f"NC-SRDF-"
                 f"{cycle_start.strftime('%Y%m%dT%H%M%S%fZ')}-"
@@ -403,11 +426,18 @@ class SRDFFramework:
                 ] = 0
 
                 transition = {
-                    "decision": "ACCEPT",
-                    "candidate": selected["name"],
-                    "old_graph": old_graph,
+                    "decision":
+                        "ACCEPT",
+
+                    "candidate":
+                        selected["name"],
+
+                    "old_graph":
+                        old_graph,
+
                     "new_graph":
                         self.state["graph"].copy(),
+
                     "state_version":
                         self.state["version"],
                 }
@@ -433,12 +463,20 @@ class SRDFFramework:
                     ] = 0
 
                 transition = {
-                    "decision": "REJECT_ALL",
-                    "graph_preserved": True,
+                    "decision":
+                        "REJECT_ALL",
+
+                    "graph_preserved":
+                        True,
+
                     "backoff_triggered":
                         backoff_triggered,
+
                     "rejection_count":
-                        self.state["rejection_count"],
+                        self.state[
+                            "rejection_count"
+                        ],
+
                     "state_version":
                         self.state["version"],
                 }
@@ -517,13 +555,14 @@ class SRDFFramework:
                 "status":
                     "FAILED",
 
-                "error": {
-                    "type":
-                        type(exc).__name__,
+                "error":
+                    {
+                        "type":
+                            type(exc).__name__,
 
-                    "message":
-                        str(exc),
-                },
+                        "message":
+                            str(exc),
+                    },
 
                 "cycle_number":
                     self.cycle_count,
@@ -585,7 +624,9 @@ class SRDFFramework:
                 y_test,
             )
 
-            results.append(result)
+            results.append(
+                result
+            )
 
             if (
                 self.config["cycle_interval"]
@@ -615,10 +656,14 @@ class SRDFFramework:
                 self.cycle_count,
 
             "config":
-                deepcopy(self.config),
+                deepcopy(
+                    self.config
+                ),
 
             "state":
-                deepcopy(self.state),
+                deepcopy(
+                    self.state
+                ),
 
             "last_activity":
                 datetime.now(
@@ -632,6 +677,7 @@ class SRDFFramework:
     ):
 
         progress_data = {
+
             "cycle_history":
                 self._json_safe(
                     self.cycle_history
@@ -666,25 +712,36 @@ class SRDFFramework:
                 ensure_ascii=False,
             )
 
-    def load_config(self, config):
-        self.config.update(config)
+    def load_config(
+        self,
+        config,
+    ):
+
+        self.config.update(
+            config
+        )
 
     def get_cycle_history(self):
+
         return self.cycle_history
 
     @staticmethod
-    def _json_safe(value):
+    def _json_safe(
+        value,
+    ):
 
         if isinstance(
             value,
             np.generic,
         ):
+
             return value.item()
 
         if isinstance(
             value,
             np.ndarray,
         ):
+
             return value.tolist()
 
         if isinstance(
