@@ -1,0 +1,53 @@
+{
+  "aggregate_id": "NC-SRDF-MULTIRUN-20260917T223125Z",
+  "total_runs": 5,
+  "successful_runs": 5,
+  "seeds": [
+    7,
+    21,
+    42,
+    73,
+    101
+  ],
+  "selection_counts": {
+    "GradientBoosting": 3,
+    "SMOTE_RandomForest": 2
+  },
+  "detailed_runs": [
+    {
+      "seed": 7,
+      "status": "SUCCESS",
+      "decision": "ACCEPT",
+      "imbalance_trigger": true,
+      "selected_solution": "GradientBoosting"
+    },
+    {
+      "seed": 21,
+      "status": "SUCCESS",
+      "decision": "ACCEPT",
+      "imbalance_trigger": true,
+      "selected_solution": "GradientBoosting"
+    },
+    {
+      "seed": 42,
+      "status": "SUCCESS",
+      "decision": "ACCEPT",
+      "imbalance_trigger": true,
+      "selected_solution": "SMOTE_RandomForest"
+    },
+    {
+      "seed": 73,
+      "status": "SUCCESS",
+      "decision": "ACCEPT",
+      "imbalance_trigger": true,
+      "selected_solution": "GradientBoosting"
+    },
+    {
+      "seed": 101,
+      "status": "SUCCESS",
+      "decision": "ACCEPT",
+      "imbalance_trigger": true,
+      "selected_solution": "SMOTE_RandomForest"
+    }
+  ]
+}
