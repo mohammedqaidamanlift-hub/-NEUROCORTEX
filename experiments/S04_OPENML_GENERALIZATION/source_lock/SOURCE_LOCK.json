@@ -1,0 +1,45 @@
+{
+  "lock_type": "SOURCE_LOCK",
+  "experiment_id": "S04-OGV",
+  "experiment_directory": "S04_OPENML_GENERALIZATION",
+  "historical_protocol_identifier": "NC-SRDF-R4",
+  "protocol_version": "R4",
+  "source_status": "FROZEN",
+  "created_utc": "2026-09-27T22:15:09.865569+00:00",
+  "repository": "mohammedqaidamanlift-hub/-NEUROCORTEX",
+  "branch": "main",
+  "base_git_commit": "62343d2ad5b6d1230d5fe0e576ba38c8fa9cee92",
+  "source_files": [
+    {
+      "file": "src/__init__.py",
+      "status": "PASS",
+      "expected_sha256": "fbc8bdeef85fd90929b85635a9d64eacf1e70c045fd868a9c39046a4719e4721",
+      "actual_sha256": "fbc8bdeef85fd90929b85635a9d64eacf1e70c045fd868a9c39046a4719e4721"
+    },
+    {
+      "file": "src/arbiter.py",
+      "status": "PASS",
+      "expected_sha256": "eca757f3f21585d013c1479431344278e64f4a20ea549a8c2c935ba67c7d155e",
+      "actual_sha256": "eca757f3f21585d013c1479431344278e64f4a20ea549a8c2c935ba67c7d155e"
+    },
+    {
+      "file": "src/core.py",
+      "status": "PASS",
+      "expected_sha256": "902e5ddbb02b45d77450f7514493d4949a00b10bbb1ac5bacf06fa6909f00280",
+      "actual_sha256": "902e5ddbb02b45d77450f7514493d4949a00b10bbb1ac5bacf06fa6909f00280"
+    },
+    {
+      "file": "src/generator.py",
+      "status": "PASS",
+      "expected_sha256": "c3c6558e6882eb9260ea978494fb63178f59f3649cbb8c039e49ff9c7c56fbda",
+      "actual_sha256": "c3c6558e6882eb9260ea978494fb63178f59f3649cbb8c039e49ff9c7c56fbda"
+    },
+    {
+      "file": "src/trawler.py",
+      "status": "PASS",
+      "expected_sha256": "c135a615c60d7f0e77d764cf45d3ba6180ee2be8f09e5baf35d1498cefa63905",
+      "actual_sha256": "c135a615c60d7f0e77d764cf45d3ba6180ee2be8f09e5baf35d1498cefa63905"
+    }
+  ],
+  "integrity_rule": "The listed source files must match these SHA256 values before S04-OGV execution."
+}
