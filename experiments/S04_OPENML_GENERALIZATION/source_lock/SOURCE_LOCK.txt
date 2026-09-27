@@ -4,7 +4,7 @@ Experiment       : S04-OGV
 Protocol ID      : NC-SRDF-R4
 Protocol version : R4
 Source status    : FROZEN
-Base Git commit  : 62343d2ad5b6d1230d5fe0e576ba38c8fa9cee92
+Base Git commit  : a26ae75593d53dd2c01b6db320177f7cd7eda7cd
 
 Authoritative source files:
 
