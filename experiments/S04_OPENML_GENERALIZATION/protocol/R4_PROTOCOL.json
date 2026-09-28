@@ -1,0 +1,368 @@
+{
+  "protocol_id": "NC-SRDF-R4",
+  "protocol_version": "R4",
+  "experiment_id": "S04-OGV",
+  "experiment_name": "OpenML Generalization Validation",
+  "historical_identifier": "R4",
+  "protocol_status": "DRAFT_BEFORE_FREEZE",
+  "created_utc": "2026-09-28T03:34:51.487183+00:00",
+  "freeze_scope": {
+    "scope_id": "S04_OPENML_GENERALIZATION_ONLY",
+    "applies_to": "R4/S04-OGV experimental evidence chain only",
+    "repository_wide_freeze": false,
+    "phase_1_freeze": false,
+    "r3_freeze": false,
+    "future_protocols_allowed": true,
+    "future_documentation_allowed": true,
+    "future_historical_artifacts_allowed": true,
+    "future_independent_research_allowed": true,
+    "important_rule": "A later addition to Phase 1, R3, or another repository area does not constitute an amendment to R4 unless it changes the R4 evidence chain itself.",
+    "r4_lock_principle": "Only the R4-specific protocol, source identity, cohort, runner, and resulting evidence chain are frozen when their respective R4 lock stages are completed."
+  },
+  "scientific_scope": {
+    "objective": "Evaluate the executable NeuroCortex Self-Reinforcing Development Framework on an a priori OpenML binary-classification cohort, with explicit evaluation of trigger-controlled candidate generation, independent authorization, structural adaptation, and reproducible execution.",
+    "primary_unit": "dataset_fold_run",
+    "generator_evaluation_unit": "triggered_dataset_fold_run",
+    "control_unit": "eligible_dataset_fold_with_IR_below_threshold",
+    "no_result_driven_selection": true,
+    "no_manual_dataset_selection": true,
+    "no_performance_based_selection": true,
+    "no_runtime_methodological_injection": true,
+    "synthetic_generator_tests_are_not_R4_evidence": true,
+    "historical_results_from_S02_or_S03_are_not_R4_data": true
+  },
+  "source_contract": {
+    "repository_root": "/content/neurocortex-github",
+    "source_root": "/content/neurocortex-github/src",
+    "required_source_files": [
+      "src/__init__.py",
+      "src/core.py",
+      "src/trawler.py",
+      "src/generator.py",
+      "src/arbiter.py"
+    ],
+    "source_sha256": {
+      "src/__init__.py": "fbc8bdeef85fd90929b85635a9d64eacf1e70c045fd868a9c39046a4719e4721",
+      "src/core.py": "902e5ddbb02b45d77450f7514493d4949a00b10bbb1ac5bacf06fa6909f00280",
+      "src/trawler.py": "c135a615c60d7f0e77d764cf45d3ba6180ee2be8f09e5baf35d1498cefa63905",
+      "src/generator.py": "c3c6558e6882eb9260ea978494fb63178f59f3649cbb8c039e49ff9c7c56fbda",
+      "src/arbiter.py": "eca757f3f21585d013c1479431344278e64f4a20ea549a8c2c935ba67c7d155e"
+    },
+    "source_mutation_allowed_for_R4": false,
+    "source_lock_required": true,
+    "scope_note": "This source lock applies only to the R4/S04 evidence chain. It does not prohibit future source development elsewhere in the repository or future protocol work for other experiments."
+  },
+  "data_source": {
+    "provider": "OpenML",
+    "dataset_type": "supervised_binary_classification",
+    "target_policy": "OpenML declared default target",
+    "require_target": true,
+    "require_features": true,
+    "require_labels": true,
+    "synthetic_data_allowed": false,
+    "manual_target_definition": false,
+    "manual_label_remapping": false,
+    "dataset_identity_required": true,
+    "dataset_metadata_required": true
+  },
+  "eligibility": {
+    "task_type": "binary_classification",
+    "exact_class_count": 2,
+    "minimum_minority_class_count": 5,
+    "dataset_integrity_rules": {
+      "missing_target": "REJECT",
+      "zero_instances": "REJECT",
+      "zero_features": "REJECT",
+      "non_binary_target": "REJECT",
+      "minority_class_below_5": "REJECT"
+    },
+    "selection_rules": {
+      "manual_selection": false,
+      "manual_requalification": false,
+      "post_result_selection": false,
+      "post_result_substitution": false,
+      "target_count_requirement": null,
+      "threshold_relaxation": false
+    },
+    "critical_distinction": "Eligibility determines whether a dataset is valid for the authoritative R4 cohort. The IR threshold determines whether an eligible fold triggers the SRDF Generator. IR below 3.0 does not make an otherwise eligible dataset invalid."
+  },
+  "split_configuration": {
+    "method": "StratifiedKFold",
+    "n_splits": 5,
+    "shuffle": true,
+    "random_state": 42,
+    "fallback_method": null,
+    "fallback_random_state": null,
+    "runtime_split_injection": false,
+    "all_folds_required": true,
+    "test_set_unchanged": true,
+    "split_failure_policy": "Record the failure. Do not replace the split method or modify split parameters during execution."
+  },
+  "trigger_contract": {
+    "metric": "imbalance_ratio",
+    "formula": "majority_class_count / minority_class_count",
+    "threshold": 3.0,
+    "training_partition_only": true,
+    "condition_triggered": "IR >= 3.0",
+    "condition_not_triggered": "IR < 3.0",
+    "triggered_status": "TRIGGERED",
+    "not_triggered_status": "NOT_TRIGGERED",
+    "not_triggered_is_failure": false,
+    "not_triggered_is_dataset_rejection": false,
+    "generator_runs_when_not_triggered": false,
+    "not_triggered_must_be_recorded": true,
+    "exact_ir_required": true,
+    "trigger_is_determined_before_generator": true,
+    "trigger_must_not_depend_on_model_performance": true,
+    "trigger_must_not_depend_on_generator_output": true,
+    "trigger_must_not_depend_on_arbiter_output": true,
+    "trigger_screening_purpose": "Avoid unnecessary full SRDF/Generator execution for eligible folds that do not satisfy the frozen trigger condition."
+  },
+  "srdf_workflow": {
+    "ordered_stages": [
+      "Observe",
+      "Analyze",
+      "Generate",
+      "Evaluate",
+      "Authorize",
+      "Commit_or_Reject",
+      "Record"
+    ],
+    "not_triggered_path": [
+      "Observe",
+      "Analyze",
+      "Record"
+    ],
+    "triggered_path": [
+      "Observe",
+      "Analyze",
+      "Generate",
+      "Evaluate",
+      "Authorize",
+      "Commit_or_Reject",
+      "Record"
+    ],
+    "generator_requires_trigger": true,
+    "actual_trawler_output_required": true,
+    "actual_generator_input_required": true,
+    "actual_arbiter_decision_required": true,
+    "forced_generation": false,
+    "manual_candidate_injection": false,
+    "post_result_candidate_injection": false
+  },
+  "generator_contract": {
+    "execution_condition": "TRIGGERED only",
+    "input_source": "Actual Trawler output from the same dataset-fold-run",
+    "empty_generator_output": "GENERATOR_EMPTY",
+    "generator_empty_is_automatic_failure": false,
+    "forced_generation": false,
+    "synthetic_candidate_injection": false,
+    "manual_candidate_injection": false,
+    "candidate_space": "Predefined executable candidate space available to the authoritative NeuroCortex implementation.",
+    "generator_telemetry_required": true,
+    "generator_error_attribution_required": true
+  },
+  "authorization_contract": {
+    "candidate_generation_and_authorization_separated": true,
+    "authorization_actor": "Arbiter",
+    "independent_gates": [
+      "structural",
+      "resource",
+      "safety",
+      "utility"
+    ],
+    "authorization_outcomes": [
+      "ACCEPT",
+      "REJECT"
+    ],
+    "manual_override": false,
+    "forced_authorization": false,
+    "post_result_override": false,
+    "arbiter_telemetry_required": true,
+    "authorization_reason_required": true
+  },
+  "invariants": {
+    "input_to_output_path_required": true,
+    "allowed_nodes_must_be_unique": true,
+    "test_set_must_remain_unchanged": true,
+    "predictions_must_be_finite": true,
+    "metrics_must_be_finite_when_defined": true,
+    "constraints_must_be_satisfied_before_commit": true,
+    "version_increment_once_per_authorized_commit": true,
+    "rejected_candidate_must_not_commit": true,
+    "generator_must_not_run_when_not_triggered": true,
+    "test_data_must_not_control_trigger": true,
+    "test_data_must_not_control_generation": true,
+    "test_data_must_not_control_authorization": true
+  },
+  "execution": {
+    "framework": "SRDFFramework",
+    "entry_point": "run_cycle",
+    "required_inputs": [
+      "X_train",
+      "y_train",
+      "X_test",
+      "y_test",
+      "run_id"
+    ],
+    "source_modification_during_R4": false,
+    "protocol_modification_during_R4": false,
+    "cohort_modification_during_R4": false,
+    "runner_modification_during_R4": false,
+    "dataset_reselection": false,
+    "parameter_mutation": false,
+    "runtime_methodological_injection": false,
+    "automatic_retry": false,
+    "fallback_method": false
+  },
+  "status_taxonomy": {
+    "NOT_TRIGGERED": "Eligible fold with IR < 3.0. Valid non-failure state. Generator is not executed.",
+    "TRIGGERED": "Eligible fold with IR >= 3.0 and entry into the SRDF Generator path.",
+    "GENERATOR_EMPTY": "Triggered case where the Generator receives the actual Trawler output but produces no candidate.",
+    "SUCCESS": "Triggered case completing the required SRDF workflow with valid terminal evidence.",
+    "SYSTEM_FAILURE": "Failure attributable to NeuroCortex/SRDF execution logic.",
+    "INCOMPLETE": "Execution started but required terminal evidence was not completed.",
+    "INTERRUPTED": "Execution stopped by an interruption before completion.",
+    "INFRASTRUCTURE_ERROR": "Failure attributable to execution infrastructure.",
+    "EXPERIMENT_HARNESS_ERROR": "Failure attributable to the experiment runner, orchestration, or evidence-recording harness.",
+    "DATA_ERROR": "Failure attributable to dataset content, loading, or data integrity.",
+    "DEPENDENCY_ERROR": "Failure attributable to unavailable or incompatible software dependencies."
+  },
+  "failure_policy": {
+    "record_all_failures": true,
+    "not_triggered_is_failure": false,
+    "generator_empty_is_automatic_failure": false,
+    "retry": false,
+    "method_change_after_failure": false,
+    "post_result_reclassification": false,
+    "retain_error_type": true,
+    "retain_error_message": true,
+    "retain_exception_class": true,
+    "retain_stage": true,
+    "retain_traceback_when_available": true,
+    "retain_failure_attribution": true,
+    "system_failure_rate_denominator": "Triggered cases entering the authoritative SRDF execution path",
+    "not_triggered_rate_reported_separately": true,
+    "infrastructure_failures_reported_separately": true,
+    "harness_failures_reported_separately": true,
+    "data_failures_reported_separately": true,
+    "dependency_failures_reported_separately": true,
+    "interrupted_cases_reported_separately": true,
+    "incomplete_cases_reported_separately": true
+  },
+  "telemetry": {
+    "required_case_identity": [
+      "dataset_id",
+      "dataset_version",
+      "random_seed",
+      "fold_index",
+      "run_id"
+    ],
+    "required_reproducibility_identity": [
+      "source_sha256",
+      "protocol_sha256",
+      "cohort_sha256"
+    ],
+    "required_trigger_fields": [
+      "imbalance_ratio",
+      "trigger_threshold",
+      "trigger_status"
+    ],
+    "trawler_record": true,
+    "generator_record": true,
+    "candidate_record": true,
+    "evaluation_record": true,
+    "arbiter_record": true,
+    "transition_record": true,
+    "authorization_record": true,
+    "commit_record": true,
+    "final_status": true,
+    "error_record_when_applicable": true,
+    "timestamp": true
+  },
+  "reproducibility": {
+    "random_seed": 42,
+    "split_random_state": 42,
+    "n_splits": 5,
+    "python_version_required": true,
+    "package_versions_required": true,
+    "dataset_metadata_required": true,
+    "fold_index_required": true,
+    "run_id_required": true,
+    "timestamp_required": true,
+    "source_hash_required": true,
+    "protocol_hash_required": true,
+    "cohort_hash_required": true
+  },
+  "cohort_contract": {
+    "cohort_built_before_execution": true,
+    "cohort_lock_required": true,
+    "no_target_dataset_count": true,
+    "no_manual_dataset_replacement": true,
+    "no_post_result_dataset_replacement": true,
+    "no_threshold_relaxation": true,
+    "no_manual_requalification": true,
+    "null_suite_allowed": true,
+    "null_suite_rule": "If no dataset satisfies the frozen eligibility contract, record a null suite. Do not relax thresholds, replace datasets, or substitute datasets after observing results.",
+    "trigger_screening_is_not_dataset_selection": true,
+    "eligible_fold_with_IR_below_3": "Record NOT_TRIGGERED; do not execute Generator.",
+    "eligible_fold_with_IR_at_least_3": "Enter the full SRDF Generator path."
+  },
+  "r4_lock_policy": {
+    "freeze_applies_only_to_R4": true,
+    "freeze_applies_to_S04": true,
+    "freeze_applies_to_S02": false,
+    "freeze_applies_to_S03": false,
+    "repository_wide_freeze": false,
+    "required_R4_locks": [
+      "R4_PROTOCOL_LOCK",
+      "R4_SOURCE_LOCK",
+      "R4_COHORT_LOCK",
+      "R4_RUNNER_LOCK"
+    ],
+    "execution_allowed_only_after": "R4 protocol, source, cohort, and runner locks are all successfully verified.",
+    "methodological_change_after_R4_lock": "Requires a new R4 amendment/protocol version. The existing R4 evidence chain is not silently modified.",
+    "documentation_additions_outside_R4": "Allowed",
+    "phase_1_additions": "Allowed",
+    "r3_additions": "Allowed"
+  },
+  "amendment_policy": {
+    "protocol_frozen_before_R4_execution": true,
+    "mid_R4_protocol_modification": false,
+    "threshold_change_after_R4_lock": false,
+    "split_change_after_R4_lock": false,
+    "cohort_change_after_R4_lock": false,
+    "runner_change_after_R4_lock": false,
+    "runtime_methodological_injection": false,
+    "new_protocol_required_for_methodological_change": true,
+    "previous_R4_protocol_hash_required": true,
+    "historical_phase_1_or_R3_modification_does_not_amend_R4": true
+  },
+  "artifacts": {
+    "protocol": "experiments/S04_OPENML_GENERALIZATION/protocol/R4_PROTOCOL.json",
+    "protocol_freeze": "experiments/S04_OPENML_GENERALIZATION/protocol/R4_PROTOCOL_FREEZE.json",
+    "source_lock": "experiments/S04_OPENML_GENERALIZATION/source_lock/R4_SOURCE_LOCK.json",
+    "cohort": "experiments/S04_OPENML_GENERALIZATION/cohort/R4_COHORT.json",
+    "cohort_manifest": "experiments/S04_OPENML_GENERALIZATION/cohort/R4_COHORT_MANIFEST.json",
+    "execution_plan": "experiments/S04_OPENML_GENERALIZATION/protocol/R4_EXECUTION_PLAN.json",
+    "runner_lock": "experiments/S04_OPENML_GENERALIZATION/runs/R4_RUNNER_LOCK.json",
+    "checkpoints": "experiments/S04_OPENML_GENERALIZATION/checkpoints/",
+    "raw_records": "experiments/S04_OPENML_GENERALIZATION/results/R4_RAW_RECORDS.jsonl",
+    "final_summary": "experiments/S04_OPENML_GENERALIZATION/results/R4_FINAL_SUMMARY.json",
+    "statistics": "experiments/S04_OPENML_GENERALIZATION/statistics/",
+    "evidence": "experiments/S04_OPENML_GENERALIZATION/evidence/",
+    "integrity_manifest": "experiments/S04_OPENML_GENERALIZATION/evidence/R4_INTEGRITY_MANIFEST.json"
+  },
+  "historical_separation": {
+    "S02_phase_1_is_historical": true,
+    "S03_R3_is_historical": true,
+    "S02_results_are_not_R4_evidence": true,
+    "S03_results_are_not_R4_evidence": true,
+    "S02_statistics_are_not_R4_statistics": true,
+    "S03_statistics_are_not_R4_statistics": true,
+    "R4_does_not_modify_S02": true,
+    "R4_does_not_modify_S03": true,
+    "future_S02_documentation_allowed": true,
+    "future_S03_documentation_allowed": true
+  }
+}
