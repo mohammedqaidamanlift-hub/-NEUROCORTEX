@@ -5,10 +5,10 @@
   "historical_protocol_identifier": "NC-SRDF-R4",
   "protocol_version": "R4",
   "source_status": "FROZEN",
-  "created_utc": "2026-09-28T03:32:36.006136+00:00",
+  "created_utc": "2026-09-28T03:42:01.959984+00:00",
   "repository": "mohammedqaidamanlift-hub/-NEUROCORTEX",
   "branch": "main",
-  "base_git_commit": "d33ef4868cb4a3380c1bc58266698225db4df2df",
+  "base_git_commit": "197c035bbd11ce2c346f9fafceb9e1b1d838a81c",
   "source_files": [
     {
       "file": "src/__init__.py",
