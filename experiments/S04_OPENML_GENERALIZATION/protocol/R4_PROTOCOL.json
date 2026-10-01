@@ -364,5 +364,825 @@
     "R4_does_not_modify_S03": true,
     "future_S02_documentation_allowed": true,
     "future_S03_documentation_allowed": true
+  },
+  "r4_case_contract": {
+    "scientific_unit": "dataset_version_seed_fold",
+    "primary_scientific_case_unit": "dataset_fold_run",
+    "case_identity": {
+      "dataset_id": "OpenML dataset identifier",
+      "dataset_version": "OpenML dataset version",
+      "random_seed": 42,
+      "fold_index": "integer 0..4",
+      "case_id_formula": "dataset_id::dataset_version::random_seed::fold_index"
+    },
+    "fold_count": 5,
+    "fold_indices": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "random_seed": 42,
+    "run_id_semantics": "Execution/session identifier only; run_id is not an independent scientific replicate and must not increase the statistical sample size.",
+    "recovery_semantics": "Checkpoint recovery resumes the same scientific case_id. Recovery does not create a new replicate.",
+    "duplicate_case_policy": "Exactly one terminal record per scientific case_id."
+  },
+  "r4_openml_universe_contract": {
+    "source": "OpenML",
+    "universe_definition": "A priori OpenML universe snapshot used to construct the R4 cohort before experimental execution.",
+    "selection_basis": {
+      "supervised_binary_classification": true,
+      "exact_class_count": 2,
+      "minimum_minority_class_count": 5,
+      "usable_features_required": true,
+      "positive_instance_count_required": true,
+      "target_required": true
+    },
+    "selection_independence": {
+      "result_driven_selection": false,
+      "performance_driven_selection": false,
+      "manual_dataset_selection": false,
+      "post_result_selection": false,
+      "post_result_replacement": false,
+      "manual_requalification": false
+    },
+    "dataset_count_policy": {
+      "target_count_is_not_a_selection_criterion": true,
+      "target_count_must_not_be_used_to_replace_datasets": true,
+      "threshold_relaxation": false
+    },
+    "synthetic_data": false,
+    "synthetic_data_as_r4_evidence": false,
+    "historical_s02_s03_data_as_r4_evidence": false
+  },
+  "r4_openml_source_cache_contract": {
+    "cache_role": "Read-only acquisition cache for OpenML source data. Cache contents are source data and are not experimental results.",
+    "cache_is_experiment_result": false,
+    "cache_mutation_as_methodological_action": false,
+    "reuse_of_previously_downloaded_source_data": "Allowed only as read-only source cache when provenance and identity are independently recorded.",
+    "active_r4_state_reuse": {
+      "old_cohort": false,
+      "old_cohort_lock": false,
+      "old_runner_state": false,
+      "old_results": false,
+      "old_statistics": false
+    }
+  },
+  "r4_target_contract": {
+    "target_source": "OpenML declared default target",
+    "manual_target_definition": false,
+    "manual_label_remapping": false,
+    "target_selection_after_observation": false,
+    "target_missing_policy": "DATA_ERROR",
+    "target_multiclass_policy": "INELIGIBLE",
+    "target_class_count_required": 2,
+    "target_identity_must_be_recorded": true,
+    "target_metadata_required": [
+      "target_name",
+      "class_counts",
+      "class_count"
+    ]
+  },
+  "r4_eligibility_contract": {
+    "eligibility_is_independent_of_trigger": true,
+    "required_conditions": {
+      "supervised_classification": true,
+      "binary_classification": true,
+      "exact_class_count": 2,
+      "minimum_minority_class_count": 5,
+      "n_instances_greater_than_zero": true,
+      "n_features_greater_than_zero": true,
+      "target_present": true
+    },
+    "rejection_conditions": {
+      "missing_target": "DATA_ERROR",
+      "zero_instances": "DATA_ERROR",
+      "zero_features": "DATA_ERROR",
+      "non_binary_target": "INELIGIBLE",
+      "minority_class_below_5": "INELIGIBLE"
+    },
+    "forbidden_actions": {
+      "manual_selection": true,
+      "manual_requalification": true,
+      "post_result_requalification": true,
+      "dataset_substitution": true,
+      "threshold_relaxation": true
+    },
+    "important_distinction": "Eligibility determines whether a dataset enters R4. Trigger screening occurs only after eligibility and must never be used as a dataset-selection mechanism."
+  },
+  "r4_split_contract": {
+    "method": "StratifiedKFold",
+    "n_splits": 5,
+    "shuffle": true,
+    "random_state": 42,
+    "fallback": null,
+    "all_folds_required": true,
+    "fold_indices": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "split_failure_policy": "record_failure_no_fallback",
+    "test_partition_semantics": "The test partition is reserved for final predictive evaluation and must not control trigger, candidate generation, authorization, preprocessing fitting, model selection, or parameter tuning.",
+    "training_partition_semantics": "Trigger computation and all training-dependent SRDF operations must use the training partition only.",
+    "test_data_leakage_prohibited": true
+  },
+  "r4_preprocessing_contract": {
+    "fit_scope": "training_partition_only",
+    "test_transform": "Apply the training-fitted preprocessing unchanged to the test partition.",
+    "test_fit_prohibited": true,
+    "cross_fold_fit_prohibited": true,
+    "manual_dataset_specific_preprocessing": false,
+    "runtime_methodological_injection": false,
+    "preprocessing_parameters_must_be_recorded": true,
+    "preprocessing_identity_must_be_recorded": true,
+    "preprocessing_failure_policy": "record_failure_no_fallback"
+  },
+  "r4_trigger_contract": {
+    "measure": "imbalance_ratio",
+    "formula": "majority_class_count / minority_class_count",
+    "threshold": 3.0,
+    "comparison": {
+      "ir_less_than_3": "NOT_TRIGGERED",
+      "ir_greater_than_or_equal_to_3": "TRIGGERED"
+    },
+    "computed_from": "training_partition_only",
+    "exact_value_required": true,
+    "trigger_before_generator": true,
+    "trigger_independent_of_model_performance": true,
+    "trigger_independent_of_generator_output": true,
+    "trigger_independent_of_arbiter_output": true,
+    "not_triggered_semantics": {
+      "is_failure": false,
+      "generator_runs": false,
+      "system_failure_denominator": false,
+      "status": "NOT_TRIGGERED"
+    },
+    "triggered_semantics": {
+      "status": "TRIGGERED",
+      "generator_runs": true
+    }
+  },
+  "r4_srdf_execution_contract": {
+    "framework": "SRDFFramework",
+    "entry_point": "run_cycle",
+    "inputs": [
+      "X_train",
+      "y_train",
+      "X_test",
+      "y_test",
+      "run_id"
+    ],
+    "workflow": [
+      "Observe",
+      "Analyze",
+      "Generate",
+      "Evaluate",
+      "Authorize",
+      "Commit_or_Reject",
+      "Record"
+    ],
+    "not_triggered_workflow": [
+      "Observe",
+      "Analyze",
+      "Record"
+    ],
+    "triggered_workflow": [
+      "Observe",
+      "Analyze",
+      "Generate",
+      "Evaluate",
+      "Authorize",
+      "Commit_or_Reject",
+      "Record"
+    ],
+    "actual_trawler_output_required": true,
+    "actual_generator_output_required_when_triggered": true,
+    "actual_arbiter_decision_required_when_candidate_exists": true,
+    "manual_candidate_injection": false,
+    "synthetic_candidate_injection": false,
+    "manual_authorization_override": false,
+    "post_result_candidate_injection": false,
+    "post_result_authorization_override": false
+  },
+  "r4_generator_contract": {
+    "invocation_condition": "TRIGGERED only",
+    "not_triggered_generator_execution": false,
+    "input": "Actual Trawler output generated for the same dataset-version-seed-fold case.",
+    "forced_generation": false,
+    "manual_candidate_injection": false,
+    "synthetic_candidate_injection": false,
+    "candidate_space": "predefined executable candidate space",
+    "empty_output_status": "GENERATOR_EMPTY",
+    "generator_empty_is_automatic_failure": false,
+    "generator_failure_is_recorded": true,
+    "required_generator_telemetry": [
+      "generator_status",
+      "candidate_count",
+      "candidate_records",
+      "candidate_identity",
+      "generator_error_type",
+      "generator_error_message",
+      "generator_exception_class",
+      "generator_traceback"
+    ]
+  },
+  "r4_authorization_contract": {
+    "authorization_component": "Arbiter",
+    "generation_and_authorization_are_separate": true,
+    "required_gates": [
+      "structural",
+      "resource",
+      "safety",
+      "utility"
+    ],
+    "allowed_decisions": [
+      "ACCEPT",
+      "REJECT"
+    ],
+    "manual_override": false,
+    "post_result_override": false,
+    "forced_acceptance": false,
+    "forced_rejection": false,
+    "reason_required": true,
+    "gate_telemetry_required": true,
+    "authorization_telemetry_required": true
+  },
+  "r4_commit_contract": {
+    "commit_requires_authorization": true,
+    "accepted_candidate_can_commit": true,
+    "rejected_candidate_can_commit": false,
+    "commit_without_authorization": false,
+    "version_increment_policy": "Exactly one version increment for each authorized structural commit.",
+    "rejected_candidate_version_increment": false,
+    "manual_commit_override": false,
+    "required_commit_telemetry": [
+      "commit_status",
+      "authorization_decision",
+      "pre_version",
+      "post_version",
+      "version_increment",
+      "transition_record"
+    ]
+  },
+  "r4_failure_contract": {
+    "terminal_statuses": [
+      "NOT_TRIGGERED",
+      "TRIGGERED",
+      "GENERATOR_EMPTY",
+      "SUCCESS",
+      "SYSTEM_FAILURE",
+      "INFRASTRUCTURE_ERROR",
+      "EXPERIMENT_HARNESS_ERROR",
+      "DATA_ERROR",
+      "DEPENDENCY_ERROR",
+      "INCOMPLETE",
+      "INTERRUPTED"
+    ],
+    "status_semantics": {
+      "NOT_TRIGGERED": "Eligible fold with IR < 3.0. Valid experimental outcome; Generator is not invoked.",
+      "TRIGGERED": "Eligible fold with IR >= 3.0 entering the authoritative SRDF path.",
+      "GENERATOR_EMPTY": "Triggered case where Generator returns no candidate. This is a valid recorded outcome and not an automatic failure.",
+      "SUCCESS": "Authoritative SRDF execution reaches terminal successful completion with all required records and invariants satisfied.",
+      "SYSTEM_FAILURE": "Failure in the authoritative SRDF execution path after trigger.",
+      "INFRASTRUCTURE_ERROR": "Execution environment or infrastructure prevents normal execution.",
+      "EXPERIMENT_HARNESS_ERROR": "Runner/orchestration/harness defect prevents valid experimental execution.",
+      "DATA_ERROR": "Dataset acquisition, target, schema, or data integrity problem prevents valid execution.",
+      "DEPENDENCY_ERROR": "Required software/dependency failure prevents valid execution.",
+      "INCOMPLETE": "Case started or was active but did not reach a terminal scientific result before execution/session loss.",
+      "INTERRUPTED": "Execution was externally interrupted before terminal completion."
+    },
+    "automatic_retry": false,
+    "automatic_reclassification": false,
+    "post_result_reclassification": false,
+    "method_change_after_failure": false,
+    "parameter_change_after_failure": false,
+    "dataset_substitution_after_failure": false,
+    "threshold_relaxation_after_failure": false,
+    "required_failure_fields": [
+      "status",
+      "stage",
+      "error_type",
+      "error_message",
+      "exception_class",
+      "traceback",
+      "attribution",
+      "timestamp"
+    ]
+  },
+  "r4_runner_contract": {
+    "role": "Execution orchestration only. Runner must execute the frozen scientific protocol and must not become a methodological decision-maker.",
+    "may_modify_protocol": false,
+    "may_modify_source": false,
+    "may_modify_cohort": false,
+    "may_reselect_dataset": false,
+    "may_modify_split": false,
+    "may_modify_threshold": false,
+    "may_modify_srdf_parameters": false,
+    "may_modify_candidate_space": false,
+    "may_modify_authorization_rules": false,
+    "automatic_retry": false,
+    "checkpoint_resume": true,
+    "checkpoint_resume_semantics": "Resume the same case_id from persisted state without changing dataset, fold, seed, protocol, source, cohort, or methodological parameters.",
+    "resume_is_new_replicate": false,
+    "active_case_at_session_loss": {
+      "must_be_recorded": true,
+      "terminal_classification": [
+        "INCOMPLETE",
+        "INTERRUPTED"
+      ],
+      "silent_restart": false
+    },
+    "terminal_record_written_once": true,
+    "runner_must_preserve": [
+      "case_id",
+      "dataset_id",
+      "dataset_version",
+      "random_seed",
+      "fold_index",
+      "protocol_sha256",
+      "source_sha256",
+      "cohort_sha256"
+    ]
+  },
+  "r4_raw_record_contract": {
+    "record_unit": "one terminal record per scientific case_id",
+    "identity_fields": [
+      "case_id",
+      "dataset_id",
+      "dataset_version",
+      "random_seed",
+      "fold_index",
+      "run_id"
+    ],
+    "reproducibility_fields": [
+      "source_sha256",
+      "protocol_sha256",
+      "cohort_sha256",
+      "python_version",
+      "package_versions"
+    ],
+    "dataset_fields": [
+      "dataset_name",
+      "target_name",
+      "n_instances",
+      "n_features",
+      "class_counts"
+    ],
+    "split_fields": [
+      "split_method",
+      "n_splits",
+      "shuffle",
+      "random_state",
+      "fold_index",
+      "train_size",
+      "test_size"
+    ],
+    "trigger_fields": [
+      "imbalance_ratio",
+      "trigger_threshold",
+      "trigger_status",
+      "trigger_source_partition"
+    ],
+    "srdf_fields": [
+      "workflow",
+      "trawler_status",
+      "trawler_output",
+      "generator_status",
+      "candidate_count",
+      "candidate_records",
+      "evaluation_records",
+      "authorization_records",
+      "transition_records",
+      "commit_records",
+      "final_status"
+    ],
+    "predictive_fields": [
+      "predictions",
+      "balanced_accuracy",
+      "accuracy",
+      "precision",
+      "recall",
+      "f1",
+      "roc_auc"
+    ],
+    "error_fields": [
+      "error_type",
+      "error_message",
+      "exception_class",
+      "traceback",
+      "failure_stage",
+      "failure_attribution"
+    ],
+    "timing_fields": [
+      "started_at",
+      "completed_at",
+      "duration_seconds"
+    ],
+    "undefined_metric_policy": "Undefined metrics remain undefined and must carry an explicit reason. Undefined metrics must never be replaced by zero."
+  },
+  "r4_predictive_metrics_contract": {
+    "primary_metric": "balanced_accuracy",
+    "secondary_metrics": [
+      "accuracy",
+      "precision",
+      "recall",
+      "f1",
+      "roc_auc"
+    ],
+    "evaluation_partition": "test",
+    "metric_computation_requires_test_predictions": true,
+    "predictions_must_be_finite": true,
+    "metrics_must_be_finite_when_defined": true,
+    "undefined_metric_policy": {
+      "retain_undefined": true,
+      "replace_with_zero": false,
+      "reason_required": true
+    },
+    "metric_exception_policy": "record_explicit_metric_error",
+    "metric_definition_locked_before_execution": true,
+    "post_result_metric_change": false
+  },
+  "r4_structural_metrics_contract": {
+    "required_metrics": [
+      "trigger_rate",
+      "generator_invocation_rate",
+      "generator_empty_rate",
+      "candidate_generation_count",
+      "candidate_acceptance_count",
+      "candidate_rejection_count",
+      "commit_count",
+      "structural_adaptation_rate",
+      "system_failure_rate",
+      "incomplete_rate",
+      "interrupted_rate"
+    ],
+    "authorization_metrics": [
+      "structural_gate_accept_rate",
+      "resource_gate_accept_rate",
+      "safety_gate_accept_rate",
+      "utility_gate_accept_rate",
+      "overall_authorization_accept_rate",
+      "overall_authorization_reject_rate"
+    ],
+    "version_metrics": [
+      "pre_version",
+      "post_version",
+      "version_increment"
+    ],
+    "structural_metric_source": "Persisted raw SRDF records only."
+  },
+  "r4_baseline_contract": {
+    "baseline_required": true,
+    "baseline_type": "Frozen non-adaptive reference using the same dataset, target, preprocessing boundary, folds, random seed, and test evaluation protocol.",
+    "baseline_structural_adaptation": false,
+    "baseline_cohort_must_match_r4": true,
+    "baseline_split_must_match_r4": true,
+    "baseline_seed_must_match_r4": true,
+    "baseline_metric_definitions_must_match_r4": true,
+    "baseline_result_substitution": false,
+    "baseline_post_result_cohort_change": false,
+    "baseline_selection_after_r4_results": false,
+    "baseline_results_must_be_separately_identified": true
+  },
+  "r4_statistics_contract": {
+    "dataset_level_primary_unit": "dataset",
+    "folds_are_not_independent_datasets": true,
+    "folds_are_nested_within_dataset": true,
+    "folds_are_not_independent_observations_for_global_dataset_inference": true,
+    "dataset_level_predictive_metric": {
+      "method": "arithmetic_mean_across_valid_folds",
+      "folds_are_aggregated_within_dataset": true
+    },
+    "global_primary_metric": {
+      "metric": "balanced_accuracy",
+      "method": "arithmetic_mean_across_dataset_level_values",
+      "dataset_is_primary_inference_unit": true
+    },
+    "paired_comparison_unit": "dataset_version_seed_fold",
+    "paired_comparison_requires_same_case_identity": true,
+    "descriptive_statistics": [
+      "mean",
+      "median",
+      "std",
+      "IQR"
+    ],
+    "paired_effects": true,
+    "confidence_intervals": {
+      "enabled": true,
+      "level": 0.95,
+      "primary_estimates": true,
+      "paired_effects": true
+    },
+    "inferential_test_selection": {
+      "frozen_before_execution": true,
+      "post_result_method_selection": false,
+      "method_must_be_recorded": true,
+      "assumptions_must_be_recorded": true
+    },
+    "failed_cases_reported_separately": true,
+    "not_triggered_reported_separately": true,
+    "generator_empty_reported_separately": true,
+    "infrastructure_errors_reported_separately": true,
+    "harness_errors_reported_separately": true,
+    "data_errors_reported_separately": true,
+    "dependency_errors_reported_separately": true,
+    "incomplete_reported_separately": true,
+    "interrupted_reported_separately": true,
+    "silent_exclusion_of_failed_cases": false,
+    "post_result_denominator_change": false
+  },
+  "r4_denominator_contract": {
+    "eligible_dataset_denominator": "Number of datasets satisfying the frozen R4 eligibility contract.",
+    "eligible_fold_denominator": "Number of folds belonging to eligible datasets that are validly constructed.",
+    "trigger_denominator": "Eligible folds for which the training-partition IR can be evaluated.",
+    "not_triggered_rate": "NOT_TRIGGERED eligible folds divided by eligible folds.",
+    "triggered_rate": "TRIGGERED eligible folds divided by eligible folds.",
+    "generator_empty_rate": "GENERATOR_EMPTY triggered folds divided by triggered folds.",
+    "success_rate": "SUCCESS triggered cases divided by triggered cases entering the authoritative SRDF execution path.",
+    "system_failure_rate": "SYSTEM_FAILURE triggered cases divided by triggered cases entering the authoritative SRDF execution path.",
+    "infrastructure_rate": "INFRASTRUCTURE_ERROR cases reported separately.",
+    "harness_error_rate": "EXPERIMENT_HARNESS_ERROR cases reported separately.",
+    "data_error_rate": "DATA_ERROR cases reported separately.",
+    "dependency_error_rate": "DEPENDENCY_ERROR cases reported separately.",
+    "incomplete_rate": "INCOMPLETE cases reported separately.",
+    "interrupted_rate": "INTERRUPTED cases reported separately.",
+    "denominator_must_be_explicit": true,
+    "silent_denominator_change": false,
+    "post_result_denominator_change": false
+  },
+  "r4_dataset_summary_contract": {
+    "one_summary_per_dataset": true,
+    "required_identity": [
+      "dataset_id",
+      "dataset_version",
+      "dataset_name"
+    ],
+    "required_counts": [
+      "eligible_fold_count",
+      "not_triggered_count",
+      "triggered_count",
+      "generator_empty_count",
+      "success_count",
+      "system_failure_count",
+      "infrastructure_error_count",
+      "experiment_harness_error_count",
+      "data_error_count",
+      "dependency_error_count",
+      "incomplete_count",
+      "interrupted_count"
+    ],
+    "required_predictive_aggregates": [
+      "balanced_accuracy_mean",
+      "accuracy_mean",
+      "precision_mean",
+      "recall_mean",
+      "f1_mean",
+      "roc_auc_mean"
+    ],
+    "folds_remain_nested_within_dataset": true,
+    "failed_folds_must_remain_visible": true
+  },
+  "r4_final_summary_contract": {
+    "required_sections": [
+      "experiment_identity",
+      "protocol_identity",
+      "source_identity",
+      "cohort_identity",
+      "runner_identity",
+      "dataset_counts",
+      "fold_counts",
+      "trigger_summary",
+      "generator_summary",
+      "authorization_summary",
+      "commit_summary",
+      "failure_summary",
+      "predictive_metrics",
+      "structural_metrics",
+      "baseline_comparison",
+      "statistics",
+      "denominators",
+      "reproducibility",
+      "integrity",
+      "manuscript_traceability"
+    ],
+    "must_be_derived_from_persisted_artifacts": true,
+    "manual_summary_edit_after_results": false,
+    "silent_omission_of_failures": false,
+    "silent_omission_of_incomplete_cases": false
+  },
+  "r4_manuscript_traceability_contract": {
+    "every_quantitative_manuscript_statement_requires_persisted_evidence": true,
+    "traceability_chain": [
+      "manuscript_claim",
+      "claim_label",
+      "final_statistic",
+      "statistical_artifact",
+      "dataset_summary",
+      "raw_case_record",
+      "case_id",
+      "dataset_id",
+      "dataset_version",
+      "fold_index",
+      "random_seed",
+      "protocol_sha256",
+      "source_sha256",
+      "cohort_sha256"
+    ],
+    "methods_claims": [
+      "protocol_lock",
+      "source_lock",
+      "cohort_lock",
+      "runner_lock"
+    ],
+    "dataset_claims": [
+      "OpenML_universe",
+      "R4_COHORT",
+      "R4_COHORT_MANIFEST"
+    ],
+    "execution_claims": [
+      "raw_records",
+      "runner_state",
+      "execution_plan"
+    ],
+    "statistical_claims": [
+      "raw_records",
+      "dataset_summaries",
+      "statistics_artifacts"
+    ],
+    "structural_claims": [
+      "trawler_records",
+      "generator_records",
+      "candidate_records",
+      "arbiter_records",
+      "transition_records",
+      "commit_records"
+    ],
+    "unsupported_evidence_policy": "CANNOT_DETERMINE",
+    "claim_labels": [
+      "SUPPORTED",
+      "PARTIALLY_SUPPORTED",
+      "UNSUPPORTED",
+      "INCONSISTENT",
+      "CANNOT_DETERMINE"
+    ],
+    "claim_label_assignment_must_be_evidence_based": true,
+    "post_result_claim_reclassification_without_evidence": false
+  },
+  "r4_artifact_contract": {
+    "required_artifacts": {
+      "protocol": "experiments/S04_OPENML_GENERALIZATION/protocol/R4_PROTOCOL.json",
+      "protocol_freeze": "experiments/S04_OPENML_GENERALIZATION/protocol/R4_PROTOCOL_FREEZE.json",
+      "source_lock": "experiments/S04_OPENML_GENERALIZATION/source_lock/R4_SOURCE_LOCK.json",
+      "openml_universe": "experiments/S04_OPENML_GENERALIZATION/cohort/R4_OPENML_UNIVERSE.json",
+      "cohort": "experiments/S04_OPENML_GENERALIZATION/cohort/R4_COHORT.json",
+      "cohort_manifest": "experiments/S04_OPENML_GENERALIZATION/cohort/R4_COHORT_MANIFEST.json",
+      "execution_plan": "experiments/S04_OPENML_GENERALIZATION/protocol/R4_EXECUTION_PLAN.json",
+      "runner_lock": "experiments/S04_OPENML_GENERALIZATION/runs/R4_RUNNER_LOCK.json",
+      "checkpoints": "experiments/S04_OPENML_GENERALIZATION/checkpoints/",
+      "raw_records": "experiments/S04_OPENML_GENERALIZATION/results/R4_RAW_RECORDS.jsonl",
+      "dataset_summaries": "experiments/S04_OPENML_GENERALIZATION/results/R4_DATASET_SUMMARIES.json",
+      "final_summary": "experiments/S04_OPENML_GENERALIZATION/results/R4_FINAL_SUMMARY.json",
+      "statistics": "experiments/S04_OPENML_GENERALIZATION/statistics/",
+      "evidence": "experiments/S04_OPENML_GENERALIZATION/evidence/",
+      "integrity_manifest": "experiments/S04_OPENML_GENERALIZATION/evidence/R4_INTEGRITY_MANIFEST.json"
+    },
+    "artifact_deletion_after_execution": false,
+    "raw_record_deletion": false,
+    "failed_case_deletion": false
+  },
+  "r4_lock_contract": {
+    "required_locks": [
+      "R4_PROTOCOL_LOCK",
+      "R4_SOURCE_LOCK",
+      "R4_COHORT_LOCK",
+      "R4_RUNNER_LOCK"
+    ],
+    "execution_requires_all_locks_verified": true,
+    "protocol_freeze_before_execution": true,
+    "source_lock_before_execution": true,
+    "cohort_lock_before_execution": true,
+    "runner_lock_before_execution": true,
+    "post_freeze_methodological_change": false,
+    "silent_lock_modification": false,
+    "amendment_required_for_methodological_change": true,
+    "amendment_must_preserve_previous_chain": true
+  },
+  "r4_amendment_contract": {
+    "protocol_frozen_before_execution": true,
+    "mid_execution_protocol_modification": false,
+    "threshold_change_after_lock": false,
+    "split_change_after_lock": false,
+    "cohort_change_after_lock": false,
+    "preprocessing_change_after_lock": false,
+    "metric_change_after_lock": false,
+    "failure_classification_change_after_lock": false,
+    "runner_methodological_change_after_lock": false,
+    "runtime_injection_after_lock": false,
+    "new_protocol_required_for_methodological_change": true,
+    "previous_protocol_hash_required_for_amendment": true
+  },
+  "r4_finalization_contract": {
+    "finalization_requires": [
+      "protocol_lock",
+      "source_lock",
+      "cohort_lock",
+      "runner_lock",
+      "raw_records_complete",
+      "dataset_summaries_complete",
+      "statistics_complete",
+      "evidence_complete",
+      "integrity_manifest_complete",
+      "manuscript_traceability_complete"
+    ],
+    "finalization_must_not_change": [
+      "cohort",
+      "dataset_denominator",
+      "fold_denominator",
+      "trigger_threshold",
+      "split_method",
+      "split_seed",
+      "metric_definitions",
+      "preprocessing_contract",
+      "failure_classification",
+      "raw_case_records"
+    ],
+    "delete_failed_cases": false,
+    "reclassify_results_due_to_undesirable_outcome": false,
+    "rerun_selected_cases_due_to_undesirable_outcome": false,
+    "change_denominator_after_results": false,
+    "change_metric_after_results": false
+  },
+  "r4_historical_separation_contract": {
+    "s02_phase1_is_r4_evidence": false,
+    "s03_r3_is_r4_evidence": false,
+    "r4_may_modify_s02": false,
+    "r4_may_modify_s03": false,
+    "historical_results_must_not_enter_r4_statistics": true,
+    "historical_results_must_not_enter_r4_baseline": true,
+    "historical_artifacts_must_remain_historically_identified": true
+  },
+  "r4_reproducibility_contract": {
+    "random_seed": 42,
+    "split_random_state": 42,
+    "n_splits": 5,
+    "python_version_required": true,
+    "package_versions_required": true,
+    "dataset_metadata_required": true,
+    "fold_metadata_required": true,
+    "run_id_required": true,
+    "timestamp_required": true,
+    "source_hash_required": true,
+    "protocol_hash_required": true,
+    "cohort_hash_required": true,
+    "case_identity_required": true
+  },
+  "r4_invariants_contract": {
+    "input_to_output_path_required": true,
+    "allowed_nodes_unique": true,
+    "test_data_unchanged": true,
+    "predictions_finite": true,
+    "metrics_finite_when_defined": true,
+    "constraints_satisfied_before_commit": true,
+    "authorized_commit_increments_version_once": true,
+    "rejected_candidate_cannot_commit": true,
+    "generator_must_not_run_when_not_triggered": true,
+    "test_data_must_not_control_trigger": true,
+    "test_data_must_not_control_generation": true,
+    "test_data_must_not_control_authorization": true,
+    "test_data_must_not_control_preprocessing_fit": true,
+    "test_data_must_not_control_model_selection": true,
+    "test_data_must_not_control_parameter_tuning": true
+  },
+  "r4_pre_freeze_boundary": {
+    "protocol_status": "DRAFT_BEFORE_FREEZE",
+    "protocol_frozen": false,
+    "source_locked": false,
+    "cohort_built": false,
+    "cohort_locked": false,
+    "execution_plan_locked": false,
+    "runner_locked": false,
+    "experiment_executed": false,
+    "results_generated": false,
+    "statistics_generated": false,
+    "evidence_generated": false,
+    "git_commit_for_final_r4": false,
+    "git_push_for_final_r4": false
+  },
+  "r4_contract_metadata": {
+    "contract_completed_by_cell": "CELL 05",
+    "contract_role": "COMPLETE_EXPERIMENTAL_CONTRACT",
+    "status": "PRE_FREEZE",
+    "completed_at_utc": "2026-10-01T20:26:37.768263+00:00",
+    "scientific_principle": "Evidence -> Protocol -> Experiment -> Statistics -> Claims -> Manuscript",
+    "finality_rule": "This contract must be complete before freeze. After freeze, methodological changes require a new protocol/amendment.",
+    "no_result_generation": true,
+    "no_openml_execution": true,
+    "no_cohort_construction": true,
+    "no_source_modification": true,
+    "no_s02_s03_modification": true
   }
 }
