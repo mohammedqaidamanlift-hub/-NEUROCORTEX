@@ -1,0 +1,104 @@
+{
+  "contract_id": "NC-SRDF-R4-EXECUTION",
+  "contract_version": "R4-EC-1",
+  "experiment_id": "S04-OGV",
+  "contract_status": "FROZEN",
+  "scientific_protocol": {
+    "path": "experiments/S04_OPENML_GENERALIZATION/protocol/R4_PROTOCOL.json",
+    "sha256": "a85c5e0dc4c76462a9fe830d8dcd898a7cb7898ddae45461e2ef01f1f5fb0533",
+    "status": "FROZEN",
+    "execution_may_modify_protocol": false
+  },
+  "execution_scope": {
+    "purpose": "Operationalize the frozen R4 scientific protocol without changing its scientific rules.",
+    "scientific_methodology_is_immutable": true,
+    "runtime_mechanisms_are_operational_only": true
+  },
+  "runtime_integrity": {
+    "automatic_methodological_change": false,
+    "automatic_parameter_change": false,
+    "automatic_dataset_change": false,
+    "automatic_retry": false,
+    "silent_restart": false,
+    "silent_case_exclusion": false,
+    "manual_result_editing": false,
+    "manual_candidate_injection": false,
+    "manual_authorization_override": false
+  },
+  "session_and_process_recovery": {
+    "purpose": "Protect execution continuity and previously persisted state after an interrupted runtime.",
+    "scientific_interpretation": "Runtime interruption or session loss is an execution-state event. It is not, by itself, evidence of predictive success, predictive failure, structural success, or structural failure.",
+    "recovery_may_resume_from_persisted_state": true,
+    "recovery_may_change_scientific_method": false,
+    "recovery_may_change_protocol": false,
+    "recovery_may_change_dataset_selection": false,
+    "recovery_may_change_parameters": false,
+    "recovery_may_invent_missing_results": false,
+    "incomplete_state_must_be_preserved": true
+  },
+  "checkpointing": {
+    "enabled": true,
+    "purpose": "Persist operational execution state so an interrupted runtime can continue without silently repeating or fabricating completed work.",
+    "checkpoint_must_be_atomic": true,
+    "checkpoint_must_be_versioned": true,
+    "checkpoint_must_include_execution_identity": true,
+    "checkpoint_must_not_contain_modified_scientific_rules": true
+  },
+  "case_state_machine": {
+    "allowed_states": [
+      "PENDING",
+      "RUNNING",
+      "COMPLETED",
+      "INCOMPLETE",
+      "FAILED"
+    ],
+    "terminal_states": [
+      "COMPLETED",
+      "INCOMPLETE",
+      "FAILED"
+    ],
+    "running_state_must_not_be_interpreted_as_success": true,
+    "incomplete_state_must_not_be_interpreted_as_failure": true,
+    "failed_state_must_not_be_converted_to_success": true
+  },
+  "resume_rules": {
+    "resume_only_from_persisted_state": true,
+    "completed_cases_must_not_be_reexecuted_automatically": true,
+    "running_case_at_interruption_must_not_be_marked_completed": true,
+    "running_case_at_interruption_must_not_be_marked_failed_without_evidence": true,
+    "missing_state_must_not_be_invented": true,
+    "resume_must_preserve_protocol_identity": true,
+    "resume_must_preserve_source_identity": true,
+    "resume_must_preserve_cohort_identity": true
+  },
+  "execution_identity": {
+    "protocol_id": "NC-SRDF-R4",
+    "protocol_version": "R4",
+    "experiment_id": "S04-OGV",
+    "random_state": 42,
+    "fold_count": 5,
+    "splitter": "StratifiedKFold",
+    "shuffle": true
+  },
+  "artifact_integrity": {
+    "raw_records_are_append_only": true,
+    "completed_records_are_immutable": true,
+    "checkpoint_history_is_preserved": true,
+    "execution_logs_are_preserved": true,
+    "scientific_results_must_be_traceable_to_raw_records": true,
+    "result_files_must_not_be_manually_rewritten": true
+  },
+  "separation_of_layers": {
+    "scientific_protocol": "Defines the scientific question, hypotheses, cohort, SRDF workflow, trigger, evaluation, comparison, statistics, and claim boundaries.",
+    "execution_contract": "Defines operational state handling, persistence, interruption, checkpointing, and recovery.",
+    "runner": "Implements the execution contract and invokes the frozen scientific procedure.",
+    "results": "Contain only evidence actually produced by execution."
+  },
+  "repository_rules": {
+    "protocol_is_read_only": true,
+    "execution_contract_is_versioned": true,
+    "completed_execution_components_must_be_committed": true,
+    "completed_execution_components_must_be_pushed": true,
+    "working_tree_should_be_clean_before_next_stage": true
+  }
+}
