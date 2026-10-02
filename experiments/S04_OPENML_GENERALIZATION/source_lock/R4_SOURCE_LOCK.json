@@ -1,71 +1,65 @@
 {
-  "lock_type": "R4_SOURCE_LOCK",
-  "lock_status": "VERIFIED",
-  "created_utc": "2026-10-01T20:42:21.383738+00:00",
-  "protocol_binding": {
-    "protocol_id": "NC-SRDF-R4",
-    "protocol_version": "R4",
-    "experiment_id": "S04-OGV",
-    "path": "experiments/S04_OPENML_GENERALIZATION/protocol/R4_PROTOCOL.json",
-    "sha256": "e92e1be1eae625c380323f4ff0546aeb87c9bbbcdbf55b27e838cf0e9475e956",
-    "binding_basis": "Successful Cell 05 validated protocol SHA"
-  },
+  "lock_id": "NC-SRDF-R4-SOURCE",
+  "lock_version": "R4-SL-1",
+  "status": "FROZEN",
+  "experiment_id": "S04-OGV",
+  "protocol_id": "NC-SRDF-R4",
+  "protocol_version": "R4",
+  "created_at_utc": "2026-10-02T11:24:06.055123+00:00",
   "repository": {
-    "path": "/content/neurocortex-github",
+    "remote": "https://github.com/mohammedqaidamanlift-hub/-NEUROCORTEX.git",
     "branch": "main",
-    "git_head_before_cell06": "8050a531f692c475d4c96b20f356f36f288f0ee2"
+    "commit": "9892bf50d191199b0e80ded03bd0560436991679"
   },
-  "source_files": {
-    "src/__init__.py": {
-      "expected_sha256": "fbc8bdeef85fd90929b85635a9d64eacf1e70c045fd868a9c39046a4719e4721",
-      "actual_sha256": "fbc8bdeef85fd90929b85635a9d64eacf1e70c045fd868a9c39046a4719e4721",
-      "match": true
-    },
-    "src/core.py": {
-      "expected_sha256": "902e5ddbb02b45d77450f7514493d4949a00b10bbb1ac5bacf06fa6909f00280",
-      "actual_sha256": "902e5ddbb02b45d77450f7514493d4949a00b10bbb1ac5bacf06fa6909f00280",
-      "match": true
-    },
-    "src/trawler.py": {
-      "expected_sha256": "c135a615c60d7f0e77d764cf45d3ba6180ee2be8f09e5baf35d1498cefa63905",
-      "actual_sha256": "c135a615c60d7f0e77d764cf45d3ba6180ee2be8f09e5baf35d1498cefa63905",
-      "match": true
-    },
-    "src/generator.py": {
-      "expected_sha256": "c3c6558e6882eb9260ea978494fb63178f59f3649cbb8c039e49ff9c7c56fbda",
-      "actual_sha256": "c3c6558e6882eb9260ea978494fb63178f59f3649cbb8c039e49ff9c7c56fbda",
-      "match": true
-    },
-    "src/arbiter.py": {
-      "expected_sha256": "eca757f3f21585d013c1479431344278e64f4a20ea549a8c2c935ba67c7d155e",
-      "actual_sha256": "eca757f3f21585d013c1479431344278e64f4a20ea549a8c2c935ba67c7d155e",
-      "match": true
-    }
+  "scientific_protocol": {
+    "path": "experiments/S04_OPENML_GENERALIZATION/protocol/R4_PROTOCOL.json",
+    "sha256": "a85c5e0dc4c76462a9fe830d8dcd898a7cb7898ddae45461e2ef01f1f5fb0533",
+    "status": "FROZEN"
   },
-  "execution_state": {
-    "cohort_created": false,
-    "cohort_locked": false,
-    "runner_locked": false,
-    "protocol_frozen": false,
-    "experiment_executed": false,
-    "openml_data_downloaded": false,
-    "results_generated": false
+  "execution_contract": {
+    "path": "experiments/S04_OPENML_GENERALIZATION/protocol/R4_EXECUTION_CONTRACT.json",
+    "sha256": "3f5cdb0743ee49fca4dd13d8e454e54ffd1bcd84f5cf4abdab9b11f7f2b2a67c",
+    "status": "FROZEN"
   },
-  "scientific_protection": {
-    "protocol_modification": false,
-    "source_modification": false,
-    "dataset_reselection": false,
+  "source_policy": {
+    "scope": "Git-tracked Python source files under src/",
+    "manual_source_injection": false,
+    "runtime_source_modification": false,
     "parameter_mutation": false,
-    "runtime_methodological_injection": false,
-    "automatic_retry": false,
-    "manual_candidate_injection": false,
-    "manual_authorization_override": false
+    "methodological_injection": false
   },
-  "verification": {
-    "protocol_sha256_verified": true,
-    "source_sha256_verified": true,
-    "srdf_framework_verified": true,
-    "run_cycle_verified": true
-  },
-  "note": "This lock binds R4/S04 to the exact protocol validated by Cell 05 and to the exact authoritative source hashes. It does not freeze unrelated repository areas and does not constitute cohort or execution authorization."
+  "source_files": [
+    {
+      "path": "src/__init__.py",
+      "sha256": "fbc8bdeef85fd90929b85635a9d64eacf1e70c045fd868a9c39046a4719e4721",
+      "size_bytes": 378
+    },
+    {
+      "path": "src/arbiter.py",
+      "sha256": "eca757f3f21585d013c1479431344278e64f4a20ea549a8c2c935ba67c7d155e",
+      "size_bytes": 6633
+    },
+    {
+      "path": "src/core.py",
+      "sha256": "902e5ddbb02b45d77450f7514493d4949a00b10bbb1ac5bacf06fa6909f00280",
+      "size_bytes": 16563
+    },
+    {
+      "path": "src/generator.py",
+      "sha256": "c3c6558e6882eb9260ea978494fb63178f59f3649cbb8c039e49ff9c7c56fbda",
+      "size_bytes": 2291
+    },
+    {
+      "path": "src/trawler.py",
+      "sha256": "c135a615c60d7f0e77d764cf45d3ba6180ee2be8f09e5baf35d1498cefa63905",
+      "size_bytes": 2843
+    }
+  ],
+  "integrity": {
+    "source_file_count": 5,
+    "head_verified": true,
+    "tracked_source_verified": true,
+    "execution_started": false,
+    "results_present": false
+  }
 }
