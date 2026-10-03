@@ -5,11 +5,11 @@
   "experiment_id": "S04-OGV",
   "protocol_id": "NC-SRDF-R4",
   "protocol_version": "R4",
-  "created_at_utc": "2026-10-02T11:24:06.055123+00:00",
+  "created_at_utc": "2026-10-02T15:29:33.754203+00:00",
   "repository": {
     "remote": "https://github.com/mohammedqaidamanlift-hub/-NEUROCORTEX.git",
     "branch": "main",
-    "commit": "9892bf50d191199b0e80ded03bd0560436991679"
+    "commit": "973087f941b4de2cad0deeaa2079221b6a20941f"
   },
   "scientific_protocol": {
     "path": "experiments/S04_OPENML_GENERALIZATION/protocol/R4_PROTOCOL.json",
